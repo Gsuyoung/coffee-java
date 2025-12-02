@@ -19,7 +19,7 @@ constant:
     refresh-token-cookie-expiry: 1_296_000 # 15? (S)
 
 file:
-  directory: D:/lej/pic
+  directory: C:\lej\pic
 
 const:
   default-page-size: 20
