@@ -39,4 +39,15 @@ public class BoardController {
                 .resultData(result)
                 .build();
     }
+
+    @DeleteMapping("/{boardId}")
+    @Operation(summary = "공지사항 삭제")
+    public ResultResponse<Integer> delBoard(@PathVariable int boardId) {
+        int result = boardService.delBoard(boardId);
+
+        return ResultResponse.<Integer>builder()
+                .resultMsg("공지사항 삭제 완료")
+                .resultData(result)
+                .build();
+    }
 }
