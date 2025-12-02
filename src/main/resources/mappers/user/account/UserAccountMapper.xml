@@ -10,4 +10,24 @@
              , `name` = #{name}
              , nickname = #{nickname}
     </insert>
+
+    <select id="countByEmail">
+        SELECT count(*)
+          FROM user
+         WHERE email = #{email}
+    </select>
+
+    <select id="countByNickname">
+        SELECT count(*)
+          FROM user
+         WHERE nickname = #{nickname}
+    </select>
+    
+    <select id="selUserByEmail">
+        SELECT user_id AS userId, email, `password`
+             , `name`, nickname, user_pic AS userPic
+             , `role`, user_status AS userStatus
+          FROM user
+         WHERE email = #{email}
+    </select>
 </mapper>
