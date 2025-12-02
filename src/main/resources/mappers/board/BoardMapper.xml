@@ -21,6 +21,11 @@
         WHERE board_id = #{boardId}
     </update>
 
+    <delete id= "delBoard" >
+        DELETE FROM board
+        WHERE board_id = #{boardId}
+    </delete>
+
 
 
 

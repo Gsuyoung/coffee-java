@@ -31,4 +31,13 @@ public class BoardService {
             throw new IllegalArgumentException("공지사항 수정 실패");
         }
     }
+
+    public int delBoard(int boardId) {
+        try {
+            int result = boardMapper.delBoard(boardId);
+            return result;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("공지사항 삭제 실패");
+        }
+    }
 }
