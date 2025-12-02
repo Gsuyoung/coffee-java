@@ -1,0 +1,51 @@
+constant:
+  jackson:
+    date-format: yyyy-MM-dd
+    datetime-format: yyyy-MM-dd HH:mm:ss
+  info-const:
+    title: CoffeeJava
+    description: 카페 리뷰 커뮤니티
+    version: v1
+
+  jwt-const:
+    issuer: coffee@coffeeJava.kr
+    header-key: Authorization
+    claim-key: signedUser
+    bearer-format: JWT
+    scheme: Bearer
+    access-token-expiry: 86_400_000 #1? (MS)
+    refresh-token-expiry: 1_296_000_000 # 15? (MS)
+    refresh-token-cookie-name: refresh-token
+    refresh-token-cookie-expiry: 1_296_000 # 15? (S)
+
+file:
+  directory: D:/lej/pic
+
+const:
+  default-page-size: 20
+
+spring:
+  profiles:
+    include: secret
+  application:
+    name: coffeeJavaVer1
+  servlet:
+    multipart:
+      max-file-size: 50MB
+  web:
+    resources:
+      static-locations: classpath:/static/, classpath:/public/
+
+mybatis:
+  mapper-locations: mappers/**/*.xml
+
+springdoc:
+  swagger-ui:
+    default-model-expand-depth: 10
+    display-request-duration: true
+    groups-order: asc
+    operations-sorter: method
+    path: /swagger
+    tags-sorter: alpha
+  cache:
+    disabled: true
