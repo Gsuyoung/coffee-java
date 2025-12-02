@@ -21,7 +21,7 @@ public class MyUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>(1);
 
-        authorities.add(new SimpleGrantedAuthority(jwtUser.getRoles()));
+        authorities.add(new SimpleGrantedAuthority(jwtUser.getRolesString()));
 
         return authorities;
     }
