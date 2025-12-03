@@ -9,7 +9,27 @@
         board_content = #{boardContent}
     </insert>
 
-    <update id= "updBoard">
+    <select id= "getBoard">
+        SELECT A.board_id AS boardId, A.board_title AS boardTitle, B.nickname,
+            date(A.created_at) AS createdAt
+        FROM board A
+        INNER JOIN user B
+        ON A.user_id = B.user_id
+        WHERE B.user_id = #{userId}
+        ORDER BY A.board_id DESC
+    </select>
+
+    <select id= "getBoardDetail">
+        SELECT A.board_id AS boardId, A.board_title AS boardTitle, B.nickname, A.board_content AS boardContent,
+                date(A.created_at) AS createdAt
+        FROM board A
+        INNER JOIN user B
+        ON A.user_id = B.user_id
+        WHERE board_id = #{boardId}
+        ORDER BY board_id DESC
+    </select>
+
+    <update id= "patchBoard">
         UPDATE board
         SET
         <if test="boardTitle != null and boardTitle != '' ">
@@ -20,6 +40,12 @@
         </if>
         WHERE board_id = #{boardId}
     </update>
+
+    <select id="findUserIdByBoardId" resultType="long">
+        SELECT user_id
+        FROM board
+        WHERE board_id = #{boardId}
+    </select>
 
     <delete id= "delBoard" >
         DELETE FROM board
