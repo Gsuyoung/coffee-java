@@ -19,19 +19,20 @@ public class BoardService {
 
     public int postBoard(BoardPostReq p) {
         Long userId = authenticationFacade.getSignedUserId();
+        Long roleByUserId = boardMapper.roleByUserId(userId);
             if(!userId.equals(p.getUserId())) {
                 throw new CustomException("로그인 정보가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
             }
 
-            if(p.getRole() != 1) {
-                throw new CustomException("작성 권한이 없습니다.", HttpStatus.BAD_REQUEST);
+            if(roleByUserId != 1) {
+                throw new CustomException("작성 권한이 없습니다.", HttpStatus.FORBIDDEN);
             }
             return boardMapper.insBoard(p);
     }
 
     public List<BoardGetRes> getBoard(Long userId) {
         if(userId == null) {
-            throw new CustomException("유저 ID가 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException("유저 ID가 없습니다.", HttpStatus.NOT_FOUND);
         }
         List<BoardGetRes> boardList = boardMapper.getBoard(userId);
 
@@ -43,7 +44,7 @@ public class BoardService {
 
     public List<BoardDetailGetRes> getBoardDetail(Long boardId) {
         if(boardId == null) {
-            throw new CustomException("공지사항 ID가 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CustomException("공지사항 ID가 없습니다.", HttpStatus.NOT_FOUND);
         }
 
         List<BoardDetailGetRes> boardDetailList = boardMapper.getBoardDetail(boardId);
@@ -56,6 +57,7 @@ public class BoardService {
 
     public int patchBoard(BoardPutReq p) {
             Long userId = boardMapper.findUserIdByBoardId(p.getBoardId());
+            Long signedUserId = authenticationFacade.getSignedUserId();
 
             if(p.getBoardId() == null) {
                 throw new CustomException("공지사항이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
@@ -65,19 +67,28 @@ public class BoardService {
                 throw new CustomException("작성자만 수정할 수 있습니다.", HttpStatus.FORBIDDEN);
             }
 
+            if(!signedUserId.equals(p.getUserId())) {
+                throw new CustomException("로그인된 사용자만 수정할 수 있습니다.", HttpStatus.FORBIDDEN);
+            }
+
             return boardMapper.patchBoard(p);
     }
 
-    public int delBoard(BoardDelReq p) {
-        Long userId = boardMapper.findUserIdByBoardId(p.getBoardId());
+    public int delBoard(Long boardId, Long userId) {
+        Long userIdByBoardId = boardMapper.findUserIdByBoardId(boardId);
+        Long signedUserId = authenticationFacade.getSignedUserId();
 
-        if(p.getBoardId() == null) {
+        if(boardId == null) {
             throw new CustomException("공지사항이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
         }
 
-        if(!userId.equals(p.getUserId())) {
+        if(!userId.equals(userIdByBoardId)) {
             throw new CustomException("작성자만 삭제할 수 있습니다.", HttpStatus.FORBIDDEN);
         }
-        return boardMapper.delBoard(p);
+
+        if(!signedUserId.equals(userId)) {
+            throw new CustomException("로그인된 사용자만 삭제할 수 있습니다.", HttpStatus.FORBIDDEN);
+        }
+        return boardMapper.delBoard(boardId, userId);
     }
 }

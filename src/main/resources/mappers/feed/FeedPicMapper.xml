@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe.coffeejava.feed.FeedPicMapper">
+    <insert id = "insFeedPic">
+        INSERT INTO feed_pic
+        (feed_id, feed_pic)
+        VALUES
+        <foreach collection="pics" item="pic" open="(" close=")" separator="),(">
+            #{feedId}, #{pic}
+        </foreach>
+    </insert>
+</mapper>
