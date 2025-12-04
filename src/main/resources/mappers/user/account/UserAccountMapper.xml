@@ -47,4 +47,24 @@
           FROM user
          WHERE user_id = #{userId}
     </select>
+
+    <select id="selUserEmailByEmail">
+        SELECT email, user_id as userId
+          FROM user
+         WHERE email = #{email}
+    </select>
+
+    <insert id="insEmailAuth">
+        INSERT INTO email_auth (user_id, code, expires_at)
+        VALUES (
+            (SELECT user_id FROM user WHERE email = #{email}), #{code},
+            DATE_ADD(NOW(), INTERVAL 5 MINUTE)
+        )
+    </insert>
+
+    <update id="updOldCodesAsUsed">
+        UPDATE email_auth
+           SET is_used = 1
+         WHERE user_id = #{userId} AND is_used = 0
+    </update>
 </mapper>

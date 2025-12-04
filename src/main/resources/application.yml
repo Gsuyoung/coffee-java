@@ -35,6 +35,16 @@ spring:
   web:
     resources:
       static-locations: classpath:/static/, classpath:/public/
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ${mail.username}   # 네이버 이메일
+    password: ${mail.password}   # 네이버 로그인 비밀번호
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.starttls.enable: false   # TLS는 끄기
+      mail.smtp.ssl.trust: smtp.naver.com
 
 mybatis:
   mapper-locations: mappers/**/*.xml

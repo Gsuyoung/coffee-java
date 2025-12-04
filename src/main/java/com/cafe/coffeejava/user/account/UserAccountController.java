@@ -8,6 +8,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.transform.Result;
+
+import static reactor.netty.http.HttpConnectionLiveness.log;
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -47,4 +51,19 @@ public class UserAccountController {
                              .resultData(result)
                              .build();
     }
+
+    @PostMapping("/email-auth")
+    @Operation(summary = "유저 인증 코드 발송")
+    public ResultResponse<String> postEmailVerifyCode(@RequestBody UserEmailVerifyReq req) {
+        String email = req.getEmail().replace("\"", "").trim();
+
+        log.info("요청 email: '{}'", req.getEmail());
+        String code = userAccountService.postEmailVerifyCode(email);
+        return ResultResponse.<String>builder()
+                             .statusCode(String.valueOf(HttpServletResponse.SC_CREATED))
+                             .resultMsg("인증코드 발송 성공")
+                             .resultData(code)
+                             .build();
+    }
+
 }
