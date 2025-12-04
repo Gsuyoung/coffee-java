@@ -14,7 +14,7 @@ import java.util.List;
 @Tag(name = "공지사항 관리", description = "공지사항 등록, 불러오기, 수정, 삭제")
 @Builder
 @RestController
-@RequestMapping("Board")
+@RequestMapping("board")
 @RequiredArgsConstructor
 public class BoardController {
     private final BoardService boardService;
@@ -44,13 +44,13 @@ public class BoardController {
     }
 
     @GetMapping("detail/{boardId}")
-    @Operation(summary = "공지사항 세부사항 조회")
+    @Operation(summary = "공지 세부사항 조회")
     public ResultResponse<List<BoardDetailGetRes>> getBoardDetail(@PathVariable Long boardId) {
         List<BoardDetailGetRes> result = boardService.getBoardDetail(boardId);
 
         return ResultResponse.<List<BoardDetailGetRes>>builder()
                 .statusCode(String.valueOf(HttpServletResponse.SC_OK))
-                .resultMsg("공지사항 세부사항 조회 완료")
+                .resultMsg("공지 세부사항 조회 완료")
                 .resultData(result)
                 .build();
     }
@@ -67,10 +67,10 @@ public class BoardController {
                 .build();
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/{boardId}")
     @Operation(summary = "공지사항 삭제")
-    public ResultResponse<Integer> delBoard(@RequestBody BoardDelReq p) {
-        int result = boardService.delBoard(p);
+    public ResultResponse<Integer> delBoard(@PathVariable Long boardId, @RequestParam Long userId) {
+        int result = boardService.delBoard(boardId, userId);
 
         return ResultResponse.<Integer>builder()
                 .statusCode(String.valueOf(HttpServletResponse.SC_NO_CONTENT))

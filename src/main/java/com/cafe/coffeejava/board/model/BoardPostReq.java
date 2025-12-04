@@ -16,6 +16,4 @@ public class BoardPostReq {
     private String boardTitle;
     @Schema(title = "공지사항 내용", example = "공지사항입니다.", requiredMode = Schema.RequiredMode.REQUIRED)
     private String boardContent;
-    @JsonIgnore
-    private long role;
 }

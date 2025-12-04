@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe.coffeejava.feed.FeedMapper">
+
+    <insert id="insFeed" useGeneratedKeys="true" keyProperty="feedId">
+        INSERT INTO feed
+        SET user_id = #{userId},
+        district_id = #{districtId},
+        title = #{title},
+        cafe_name = #{cafeName},
+        content = #{content}
+    </insert>
+
+    <update id="updFeed">
+        UPDATE feed
+        <set>
+            <if test="districtId != null and districtId != '' ">
+                district_id = #{districtId},
+            </if>
+            <if test="title != null and title != '' ">
+                title = #{title},
+            </if>
+            <if test="cafeName != null and cafeName != '' ">
+                cafe_name = #{cafeName},
+            </if>
+            <if test="content != null and content != '' ">
+                content = #{content}
+            </if>
+        </set>
+        WHERE feed_id = #{feedId} and user_id = #{userId}
+    </update>
+
+    <select id="findUserIdByFeedId" resultType="long">
+        SELECT user_id
+        FROM feed
+        WHERE feed_id = #{feedId}
+    </select>
+
+    <delete id="delFeed">
+        DELETE FROM feed
+        WHERE feed_id = #{feedId} and user_id = #{userId}
+    </delete>
+</mapper>
