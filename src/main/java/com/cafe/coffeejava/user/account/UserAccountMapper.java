@@ -11,4 +11,7 @@ public interface UserAccountMapper {
     UserSignInRes selUserByEmail(String email);
     int updateUser(UserPatchReq req);
     UserPatchRes selUserInfoByUserId(long userId);
+    UserEmailVerifyRes selUserEmailByEmail(String email);
+    int insEmailAuth(String email, String code);
+    int updOldCodesAsUsed(long userId);
 }

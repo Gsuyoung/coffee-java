@@ -1,6 +1,8 @@
 package com.cafe.coffeejava.user.account;
 
 import com.cafe.coffeejava.common.exception.CustomException;
+import com.cafe.coffeejava.common.model.EmailSender;
+import com.cafe.coffeejava.common.model.EmailVerifyCodeGenerator;
 import com.cafe.coffeejava.config.CookieUtils;
 import com.cafe.coffeejava.config.constant.JwtConst;
 import com.cafe.coffeejava.config.jwt.JwtTokenProvider;
@@ -15,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static reactor.netty.http.HttpConnectionLiveness.log;
+
 @Service
 @RequiredArgsConstructor
 public class UserAccountService {
@@ -24,6 +28,8 @@ public class UserAccountService {
     private final CookieUtils  cookieUtils;
     private final AuthenticationFacade  authenticationFacade;
     private final PasswordEncoder passwordEncoder;
+    private final EmailVerifyCodeGenerator emailVerifyCodeGenerator;
+    private final EmailSender emailSender;
 
     // 회원가입
     public int postUser(UserSignUpReq req) {
@@ -84,5 +90,39 @@ public class UserAccountService {
         }
 
         return userAccountMapper.updateUser(req);
+    }
+
+    // 유저 이메일 인증 코드 발송
+    @Transactional
+    public String postEmailVerifyCode(String email) {
+        // 이메일 조회
+        UserEmailVerifyRes res = userAccountMapper.selUserEmailByEmail(email);
+        log.info("DB 조회 결과 res: {}", res);
+        log.info("userId: {}", res.getUserId());
+
+        // 인증 코드 생성
+        String code = emailVerifyCodeGenerator.generate6DigitCode();
+
+        if (res != null && res.getEmail() != null) {
+            // 이전 코드 처리: 가장 최근 코드 제외하고 나머지 is_used = 1
+            userAccountMapper.updOldCodesAsUsed(res.getUserId());
+
+            // 새로운 인증 코드 생성
+            userAccountMapper.insEmailAuth(email, code);
+            try {
+                emailSender.sendEmail(
+                        email,
+                        "비밀번호 재설정 인증코드",
+                        "인증코드: " + code
+                );
+            } catch (Exception e) {
+                // 예외 발생 시 로그 기록
+                log.error("메일 발송 실패: {}", email, e);
+                // 필요 시 사용자에게 안내 메시지 변경 가능
+                return "인증코드 발송 시 문제가 발생했습니다. 잠시 후 다시 시도해주세요.";
+            }
+        }
+
+        return "인증코드가 발송되었습니다.";
     }
 }
