@@ -84,4 +84,18 @@
         WHERE expires_at &lt; NOW()
         AND is_used = 0
     </update>
+
+    <!-- 인증 코드 확인 절차 -->
+    <select id="selAuthCode">
+        SELECT user_id AS userId, `code`, expires_at AS expiresAt
+          FROM email_auth
+         WHERE is_used = 0
+           AND user_id = #{userId}
+    </select>
+
+    <update id="patchFindPassword">
+        UPDATE user
+           SET password = #{password}
+         WHERE user_id = #{userId}
+    </update>
 </mapper>

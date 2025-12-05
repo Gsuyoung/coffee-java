@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 import static reactor.netty.http.HttpConnectionLiveness.log;
 
 @Service
@@ -124,5 +126,39 @@ public class UserAccountService {
         }
 
         return "인증코드가 발송되었습니다.";
+    }
+
+    // 유저 비밀번호 찾기
+    @Transactional
+    public int findPassword(UserPatchPasswordReq req) {
+        // 유저의 인증 코드 조회
+        UserGetCodeRes res = userAccountMapper.selAuthCode(req.getUserId());
+
+        if (res.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new CustomException("인증 코드가 만료되었습니다.",  HttpStatus.BAD_REQUEST);
+        }
+
+        if (!res.getCode().equals(req.getCode())) {
+            throw new CustomException("인증 코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        // 유저의 인증 코드가 일치하는 경우 사용 처리
+        userAccountMapper.updOldCodesAsUsed(req.getUserId());
+
+
+        // 비밀번호 조회
+        UserPatchRes userPassword = userAccountMapper.selUserInfoByUserId(req.getUserId());
+
+        // 새 비밀번호가 기존 비밀번호와 같다면 예외
+        if (passwordEncoder.matches(req.getPassword(), userPassword.getPassword())) {
+            throw new CustomException("현재 비밀번호와 동일한 비밀번호로 변경할 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        // 비밀번호 재설정
+        String hashedPassword = passwordEncoder.encode(req.getPassword());
+        req.setPassword(hashedPassword);
+        int result = userAccountMapper.patchFindPassword(req);
+
+        return result;
     }
 }

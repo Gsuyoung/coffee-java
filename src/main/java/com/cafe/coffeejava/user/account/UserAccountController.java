@@ -66,4 +66,15 @@ public class UserAccountController {
                              .build();
     }
 
+    @PatchMapping("/find-password")
+    @Operation(summary = "유저 비밀번호 찾기")
+    public ResultResponse<Integer> findPassword(@RequestBody UserPatchPasswordReq req) {
+        int result = userAccountService.findPassword(req);
+
+        return ResultResponse.<Integer>builder()
+                             .statusCode(String.valueOf(HttpServletResponse.SC_OK))
+                             .resultMsg("비밀번호 변경 성공")
+                             .resultData(result)
+                             .build();
+    }
 }
