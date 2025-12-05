@@ -15,4 +15,6 @@ public interface UserAccountMapper {
     int insEmailAuth(String email, String code);
     int updOldCodesAsUsed(long userId);
     int updExpiredCodeAsUsed();
+    UserGetCodeRes selAuthCode(long userId);
+    int patchFindPassword(UserPatchPasswordReq req);
 }
