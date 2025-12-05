@@ -14,4 +14,5 @@ public interface UserAccountMapper {
     UserEmailVerifyRes selUserEmailByEmail(String email);
     int insEmailAuth(String email, String code);
     int updOldCodesAsUsed(long userId);
+    int updExpiredCodeAsUsed();
 }

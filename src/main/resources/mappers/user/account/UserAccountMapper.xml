@@ -3,6 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cafe.coffeejava.user.account.UserAccountMapper">
+    <!-- 회원가입 -->
     <insert id="insUser">
         INSERT INTO user
            SET email = #{email}
@@ -11,18 +12,21 @@
              , nickname = #{nickname}
     </insert>
 
+    <!-- 회원가입 시 unique 확인 -->
     <select id="countByEmail">
         SELECT count(*)
           FROM user
          WHERE email = #{email}
     </select>
 
+    <!-- 회원가입 시 unique 확인 -->
     <select id="countByNickname">
         SELECT count(*)
           FROM user
          WHERE nickname = #{nickname}
     </select>
-    
+
+    <!-- 로그인 시 사용 -->
     <select id="selUserByEmail">
         SELECT user_id AS userId, email, `password`
              , `name`, nickname, user_pic AS userPic
@@ -31,6 +35,7 @@
          WHERE email = #{email}
     </select>
 
+    <!-- 유저 계정 탈퇴 시 사용 -->
     <update id="updateUser">
         UPDATE user
            SET email = CONCAT('deletedEmail_', #{userId})
@@ -42,18 +47,21 @@
          WHERE user_id = #{userId}
     </update>
 
+    <!-- 유저 계정 탈퇴 시 비밀번호 검증 -->
     <select id="selUserInfoByUserId">
         SELECT *
           FROM user
          WHERE user_id = #{userId}
     </select>
 
+    <!-- 비밀번호 찾기 시 입력받은 이메일 조회 -->
     <select id="selUserEmailByEmail">
         SELECT email, user_id as userId
           FROM user
          WHERE email = #{email}
     </select>
 
+    <!-- 인증 코드 생성 -->
     <insert id="insEmailAuth">
         INSERT INTO email_auth (user_id, code, expires_at)
         VALUES (
@@ -62,9 +70,18 @@
         )
     </insert>
 
+    <!-- 인증 코드 발송 시 이전 코드 사용 처리 -->
     <update id="updOldCodesAsUsed">
         UPDATE email_auth
            SET is_used = 1
          WHERE user_id = #{userId} AND is_used = 0
+    </update>
+
+    <!-- 만료된 인증 코드 사용 처리 -->
+    <update id="updExpiredCodeAsUsed">
+        UPDATE email_auth
+        SET is_used = 1
+        WHERE expires_at &lt; NOW()
+        AND is_used = 0
     </update>
 </mapper>
