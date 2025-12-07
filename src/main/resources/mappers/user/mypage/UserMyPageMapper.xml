@@ -3,15 +3,37 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cafe.coffeejava.user.mypage.UserMyPageMapper">
+    <!-- 유저 비밀번호 조회 -->
     <select id="selUserPassword">
         SELECT user_id AS userId, `password`
           FROM user
          WHERE user_id = #{userId}
     </select>
 
+    <!-- 유저 비밀번호 변경 -->
     <update id="updPassword">
         UPDATE user
            SET `password` = #{newPassword}
          WHERE user_id = #{userId}
     </update>
+
+    <!-- 유저 닉네임 조회 -->
+    <select id="selUserNickname">
+        SELECT user_id AS userId, nickname
+          FROM user
+         WHERE user_id = #{userId}
+    </select>
+
+    <!-- 유저 닉네임 변경 -->
+    <update id="updNickname">
+        UPDATE user
+           SET nickname = #{newNickname}
+         WHERE user_id = #{userId}
+    </update>
+
+    <select id="isNicknameExist">
+        SELECT COUNT(*)
+          FROM user
+         WHERE nickname = #{nickname}
+    </select>
 </mapper>
