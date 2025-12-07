@@ -11,6 +11,39 @@
         content = #{content}
     </insert>
 
+    <update id = "updViewCount">
+        UPDATE feed
+        SET view_count = view_count + 1
+        WHERE feed_id = #{feedId}
+    </update>
+    
+    <select id="getFeedList">
+        SELECT A.feed_id AS feedId, A.title, B.nickname, DATE(A.created_at) AS createdAt,
+            A.view_count AS viewCount, COUNT(C.feed_id) AS feedLike
+        FROM feed A
+        INNER JOIN `user` B
+        ON A.user_id = B.user_id
+        LEFT JOIN likes C
+        ON A.feed_id = C.feed_id
+        GROUP BY A.feed_id, title, nickname, DATE(A.created_at), view_count
+    </select>
+
+    <select id="getFeedListByDistrict">
+        SELECT A.feed_id AS feedId, A.title, B.nickname, DATE(A.created_at) AS createdAt,
+        A.view_count AS viewCount, COUNT(C.feed_id) AS feedLike
+        FROM feed A
+        INNER JOIN `user` B
+        ON A.user_id = B.user_id
+        LEFT JOIN likes C
+        ON A.feed_id = C.feed_id
+        WHERE A.district_id = #{districtId}
+        GROUP BY A.feed_id, title, nickname, DATE(A.created_at), view_count
+    </select>
+
+    <select id="getFeedDetailList">
+
+    </select>
+
     <update id="updFeed">
         UPDATE feed
         <set>

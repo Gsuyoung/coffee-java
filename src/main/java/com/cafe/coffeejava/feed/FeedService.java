@@ -3,10 +3,7 @@ package com.cafe.coffeejava.feed;
 import com.cafe.coffeejava.common.MyFileUtils;
 import com.cafe.coffeejava.common.exception.CustomException;
 import com.cafe.coffeejava.config.security.AuthenticationFacade;
-import com.cafe.coffeejava.feed.model.FeedPicDto;
-import com.cafe.coffeejava.feed.model.FeedPostReq;
-import com.cafe.coffeejava.feed.model.FeedPostRes;
-import com.cafe.coffeejava.feed.model.FeedPutReq;
+import com.cafe.coffeejava.feed.model.*;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,17 +28,25 @@ public class FeedService {
 
     @Transactional
     public FeedPostRes insFeed(List<MultipartFile> pics, FeedPostReq p) {
+
+        //req객체 mapper에 저장
         feedMapper.insFeed(p);
+        //feedId 찾기
         long feedId = p.getFeedId();
 
+        //중간 경로에 폴더 만들기
         String middlePath = String.format("feed/%d", feedId);
         myFileUtils.makeFolders(middlePath);
 
+        //사진들어오는 크기만큼 list 만들기
         List<String> picNameList = new ArrayList<>(pics.size());
 
+        //사진들 하나씩 돌면서 랜덤 이름 만들기
         for(MultipartFile pic : pics) {
             String savedPicName = myFileUtils.makeRandomFileName(pic);
             picNameList.add(savedPicName);
+
+            //랜덤 이름 만들어진거 마지막 filePath에 저장
             String filePath = String.format("%s/%s", middlePath, savedPicName);
             try {
                 myFileUtils.transferTo(pic, filePath);
@@ -50,6 +55,7 @@ public class FeedService {
             }
         }
 
+        //사진파일 담을 객체에 feedId와 사진 리스트 저장
         FeedPicDto feedPicDto = new FeedPicDto();
         feedPicDto.setFeedId(feedId);
         feedPicDto.setPics(picNameList);
@@ -68,6 +74,18 @@ public class FeedService {
                 .feedId(feedId)
                 .pics(picNameList)
                 .build();
+    }
+
+    @Transactional
+    public List<FeedGetDto> feedGetResList() {
+        List<FeedGetDto> result = feedMapper.getFeedList();
+        return result;
+    }
+
+    @Transactional
+    public List<FeedGetDto> feedGetListByDistrict(Long districtId) {
+        List<FeedGetDto> result = feedMapper.getFeedListByDistrict(districtId);
+        return result;
     }
 
     public int updFeed(FeedPutReq p) {
