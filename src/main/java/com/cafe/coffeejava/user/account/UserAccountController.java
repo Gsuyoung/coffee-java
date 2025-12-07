@@ -8,8 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.transform.Result;
-
 import static reactor.netty.http.HttpConnectionLiveness.log;
 
 @RestController
@@ -68,7 +66,7 @@ public class UserAccountController {
 
     @PatchMapping("/find-password")
     @Operation(summary = "유저 비밀번호 찾기")
-    public ResultResponse<Integer> findPassword(@RequestBody UserPatchPasswordReq req) {
+    public ResultResponse<Integer> findPassword(@RequestBody UserFindPasswordReq req) {
         int result = userAccountService.findPassword(req);
 
         return ResultResponse.<Integer>builder()

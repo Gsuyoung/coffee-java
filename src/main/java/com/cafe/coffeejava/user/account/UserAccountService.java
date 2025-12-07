@@ -137,7 +137,7 @@ public class UserAccountService {
 
     // 유저 비밀번호 찾기
     @Transactional
-    public int findPassword(UserPatchPasswordReq req) {
+    public int findPassword(UserFindPasswordReq req) {
         // 유저의 인증 코드 조회
         UserGetCodeRes res = userAccountMapper.selAuthCode(req.getUserId());
 

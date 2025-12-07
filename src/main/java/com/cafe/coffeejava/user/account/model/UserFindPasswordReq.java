@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(description = "비밀번호 찾기 유저 정보")
-public class UserPatchPasswordReq {
+public class UserFindPasswordReq {
     @Schema(description = "유저 PK", example = "12", requiredMode = Schema.RequiredMode.REQUIRED)
     private long userId;
 

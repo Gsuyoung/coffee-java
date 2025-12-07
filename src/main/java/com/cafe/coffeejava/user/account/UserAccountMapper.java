@@ -16,5 +16,5 @@ public interface UserAccountMapper {
     int updOldCodesAsUsed(long userId);
     int updExpiredCodeAsUsed();
     UserGetCodeRes selAuthCode(long userId);
-    int patchFindPassword(UserPatchPasswordReq req);
+    int patchFindPassword(UserFindPasswordReq req);
 }
