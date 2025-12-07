@@ -1,9 +1,7 @@
 package com.cafe.coffeejava.feed;
 
 import com.cafe.coffeejava.common.model.ResultResponse;
-import com.cafe.coffeejava.feed.model.FeedPostReq;
-import com.cafe.coffeejava.feed.model.FeedPostRes;
-import com.cafe.coffeejava.feed.model.FeedPutReq;
+import com.cafe.coffeejava.feed.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,6 +29,30 @@ public class FeedController {
         return ResultResponse.<FeedPostRes>builder()
                 .statusCode(String.valueOf(HttpServletResponse.SC_CREATED))
                 .resultMsg("게시글 등록 성공")
+                .resultData(result)
+                .build();
+    }
+
+    @GetMapping()
+    @Operation(summary = "게시글 목록 조회")
+    public ResultResponse<List<FeedGetDto>> feedGetResList() {
+        List<FeedGetDto> result = feedService.feedGetResList();
+
+        return ResultResponse.<List<FeedGetDto>>builder()
+                .statusCode((String.valueOf((HttpServletResponse.SC_OK))))
+                .resultMsg("게시글 목록 조회 성공")
+                .resultData(result)
+                .build();
+    }
+
+    @GetMapping("/{districtId}")
+    @Operation(summary = "행정구역별 게시글 목록 조회")
+    public ResultResponse<List<FeedGetDto>> getFeedListByDistrict(@PathVariable Long districtId) {
+        List<FeedGetDto> result = feedService.feedGetListByDistrict(districtId);
+
+        return ResultResponse.<List<FeedGetDto>>builder()
+                .statusCode((String.valueOf(HttpServletResponse.SC_OK)))
+                .resultMsg("행정구역별 게시글 목록 조회 성공")
                 .resultData(result)
                 .build();
     }
