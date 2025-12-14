@@ -1,10 +1,10 @@
 package com.cafe.coffeejava.user.mypage;
 
-import com.cafe.coffeejava.user.mypage.model.UserGetNicknameRes;
-import com.cafe.coffeejava.user.mypage.model.UserGetPasswordRes;
-import com.cafe.coffeejava.user.mypage.model.UserPatchNicknameReq;
-import com.cafe.coffeejava.user.mypage.model.UserPatchPasswordReq;
+import com.cafe.coffeejava.user.mypage.model.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface UserMyPageMapper {
@@ -13,4 +13,7 @@ public interface UserMyPageMapper {
     UserGetNicknameRes selUserNickname(long userId);
     int updNickname(UserPatchNicknameReq req);
     int isNicknameExist(String nickname);
+    List<UserGetMyCommentRes> selUserMyComment(long userId);
+    List<UserGetMyLikesRes> selUserMyLikesList(long userId);
+    int updUserPic(@Param("userId") Long userId, @Param("picName") String picName);;
 }

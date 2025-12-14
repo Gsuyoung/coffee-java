@@ -31,9 +31,40 @@
          WHERE user_id = #{userId}
     </update>
 
+    <!-- 유저 닉네임 존재 유무 -->
     <select id="isNicknameExist">
         SELECT COUNT(*)
           FROM user
          WHERE nickname = #{nickname}
     </select>
+
+    <!-- 유저 마이 페이지 댓글 조회 -->
+    <select id="selUserMyComment" resultType="com.cafe.coffeejava.user.mypage.model.UserGetMyCommentRes">
+        SELECT A.title, B.feed_comment AS feedComment, B.created_at AS createdAt
+          FROM feed A
+         INNER JOIN `comment` B
+            ON A.feed_id = B.feed_id
+         WHERE B.user_id = #{userId}
+    </select>
+
+    <!-- 유저 마이 페이지 좋아요 리스트 조회 -->
+    <select id="selUserMyLikesList" resultType="com.cafe.coffeejava.user.mypage.model.UserGetMyLikesRes">
+        SELECT C.feed_id AS feedId
+             , C.title, C.view_count AS viewCount
+             , C.created_at AS createdAt
+             , (SELECT COUNT(*)
+                  FROM likes A
+                 WHERE A.feed_id = C.feed_id) AS likeCount
+          FROM likes B
+         INNER JOIN feed C
+            ON B.feed_id = C.feed_id
+         WHERE B.user_id = 12
+    </select>
+
+    <!-- 새로운 프로필 이미지 등록 -->
+    <update id="updUserPic">
+        UPDATE user
+        SET user_pic = #{picName}
+        WHERE user_id = #{userId}
+    </update>
 </mapper>

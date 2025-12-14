@@ -1,22 +1,25 @@
 package com.cafe.coffeejava.user.mypage;
 
+import com.cafe.coffeejava.common.MyFileUtils;
 import com.cafe.coffeejava.common.exception.CustomException;
 import com.cafe.coffeejava.config.security.AuthenticationFacade;
-import com.cafe.coffeejava.user.mypage.model.UserGetNicknameRes;
-import com.cafe.coffeejava.user.mypage.model.UserGetPasswordRes;
-import com.cafe.coffeejava.user.mypage.model.UserPatchNicknameReq;
-import com.cafe.coffeejava.user.mypage.model.UserPatchPasswordReq;
+import com.cafe.coffeejava.user.mypage.model.*;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserMyPageService {
     private final UserMyPageMapper userMyPageMapper;
     private final AuthenticationFacade authenticationFacade;
+    private final MyFileUtils myFileUtils;
 
     // 마이 페이지 비밀번호 변경
     @Transactional
@@ -71,5 +74,64 @@ public class UserMyPageService {
         }
 
         return userMyPageMapper.updNickname(req);
+    }
+
+    // 마이 페이지 유저 댓글 조회
+    public List<UserGetMyCommentRes> getMyComment(long userId) {
+        Long loginUserId = authenticationFacade.getSignedUserId();
+
+        if (!loginUserId.equals(userId)) {
+            throw new CustomException("로그인 정보가 일치하지 않습닏다.", HttpStatus.BAD_REQUEST);
+        }
+
+        return userMyPageMapper.selUserMyComment(userId);
+    }
+
+    // 마이 페이지 좋아요 게시글 조회
+    public List<UserGetMyLikesRes> getMyLike(long userId) {
+        Long loginUserId = authenticationFacade.getSignedUserId();
+
+        if (!loginUserId.equals(userId)) {
+            throw new CustomException("로그인 정보가 일치하지 않습닏다.", HttpStatus.BAD_REQUEST);
+        }
+
+        return userMyPageMapper.selUserMyLikesList(userId);
+    }
+
+    @Transactional
+    public String patchMyPic(UserPatchPicReq req) {
+        Long loginUserId = authenticationFacade.getSignedUserId();
+        MultipartFile file = req.getPic();
+
+        // 프로필 사진 폴더 상대 경로
+        String folderPath = String.format("user/%d", loginUserId);
+        // 프로필 사진 폴더 절대 경로(삭제용)
+        String absoluteUserFolder = myFileUtils.getUploadPath() + "/" + folderPath;
+
+        // 기존 파일 삭제 (항상 수행)
+        myFileUtils.deleteFolder(absoluteUserFolder, false);
+
+        // 새 파일이 있으면 저장
+        String savedPicName = null;
+
+        if (file != null && !file.isEmpty()) {
+            savedPicName = myFileUtils.makeRandomFileName(file);
+
+            // 폴더 생성
+            myFileUtils.makeFolders(folderPath);
+
+            // 파일 저장
+            String filePath = folderPath + "/" + savedPicName;
+            try {
+                myFileUtils.transferTo(file, filePath);
+            } catch (IOException e) {
+                throw new CustomException("프로필 사진 저장 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
+        // DB 업데이트 (파일명 or null)
+        userMyPageMapper.updUserPic(loginUserId, savedPicName);
+
+        return savedPicName;
     }
 }
