@@ -17,4 +17,6 @@ public interface FeedMapper {
     int updFeed(FeedPutReq p);
     Long findUserIdByFeed(Long feedId);
     int delFeed(Long feedId);
+
+    List<PopularFeedGetRes> getPopularFeed();
 }
