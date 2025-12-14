@@ -68,6 +68,7 @@ public class UserMyPageController {
     }
 
     @PatchMapping("/pic")
+    @Operation(summary = "유저 사진 등록")
     public ResultResponse<String> patchMyPic(@ModelAttribute UserPatchPicReq req) {
         String pic = userMyPageService.patchMyPic(req);
 

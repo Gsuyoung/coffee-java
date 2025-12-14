@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe.coffeejava.comment.CommentMapper">
+    <!-- 댓글 등록 -->
+    <insert id="insComment">
+        INSERT INTO `comment`
+           SET user_id = #{userId}
+             , feed_id = #{req.feedId}
+             , feed_comment = #{req.feedComment}
+    </insert>
+
+    <!-- 피드 존재 유무 확인 -->
+    <select id="existsFeed">
+        SELECT EXISTS (
+            SELECT *
+              FROM feed
+             WHERE feed_id = #{feedId}
+        )
+    </select>
+
+    <!-- 댓글 조회 -->
+    <select id="selComment">
+        SELECT A.comment_id AS commentId, B.nickname
+             , B.user_id AS userId, A.feed_comment AS feedComment, A.created_at AS createdAt
+          FROM `comment` A
+         INNER JOIN `user` B
+            ON A.user_id = B.user_id
+         WHERE A.feed_id = #{feedId}
+         ORDER BY A.created_at
+    </select>
+
+    <!-- 댓글 수정 -->
+    <update id="updComment">
+        UPDATE `comment`
+           SET feed_comment = #{feedComment}
+         WHERE comment_id = #{commentId}
+           AND user_id = #{userId}
+    </update>
+
+    <select id="selUserIdFromComment">
+        SELECT user_id AS userId
+          FROM `comment`
+         WHERE comment_id = #{commentId}
+    </select>
+</mapper>
