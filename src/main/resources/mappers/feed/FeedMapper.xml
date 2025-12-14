@@ -97,7 +97,7 @@
                 content = #{content}
             </if>
         </set>
-        WHERE feed_id = #{feedId} and user_id = #{userId}
+        WHERE feed_id = #{feedId}
     </update>
 
     <select id="findUserIdByFeed">
@@ -108,6 +108,6 @@
 
     <delete id="delFeed">
         DELETE FROM feed
-        WHERE feed_id = #{feedId} and user_id = #{userId}
+        WHERE feed_id = #{feedId}
     </delete>
 </mapper>
