@@ -16,8 +16,22 @@
         WHERE feed_pic_id = #{feedPicId};
     </select>
 
+    <select id="findPicNameByFeedPicId">
+        SELECT feed_pic
+        FROM feed_pic
+        WHERE feed_pic_id = #{feedPicId};
+    </select>
+
     <delete id="delFeedPic">
         DELETE FROM feed_pic
         WHERE feed_pic_id = #{feedPicId}
+    </delete>
+
+    <delete id="delFeedPicList">
+        DELETE FROM feed_pic
+        WHERE feed_pic_id IN
+        <foreach collection="feedPicId" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </delete>
 </mapper>

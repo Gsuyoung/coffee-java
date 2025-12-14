@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -71,10 +72,12 @@ public class FeedController {
                 .build();
     }
 
-    @PutMapping
+    @PutMapping()
     @Operation(summary = "게시글 수정")
-    public ResultResponse<Integer>updFeed(@RequestBody FeedPutReq p) {
-        int result = feedService.updFeed(p);
+    public ResultResponse<Integer>updFeed(@RequestPart(value = "p") FeedPutReq p,
+                                          @RequestPart(value = "pics", required = false) List<MultipartFile> pics,
+                                          @RequestPart(value = "feedPicId", required = false) List<Long> feedPicId) {
+        int result = feedService.updFeed(p, pics, feedPicId);
 
         return ResultResponse.<Integer>builder()
                 .statusCode(String.valueOf(HttpServletResponse.SC_OK))

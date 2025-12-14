@@ -1,8 +1,11 @@
 package com.cafe.coffeejava.feed.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -19,4 +22,7 @@ public class FeedPutReq {
     private String cafeName;
     @Schema(title = "내용", example = "분위기 좋고 케이크가 저렴합니다.")
     private String content;
+
+    @JsonIgnore
+    private List<String> feedPic;
 }
