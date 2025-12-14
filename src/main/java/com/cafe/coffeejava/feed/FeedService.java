@@ -219,7 +219,11 @@ public class FeedService {
             }
         }
 
-        //DB삭제
+        //DB 삭제
         return feedPicMapper.delFeedPics(feedPicIds);
+    }
+
+    public List<PopularFeedGetRes> getPopularFeed() {
+        return feedMapper.getPopularFeed();
     }
 }

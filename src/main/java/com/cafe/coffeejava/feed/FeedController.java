@@ -72,6 +72,18 @@ public class FeedController {
                 .build();
     }
 
+    @GetMapping("/popularFeed")
+    @Operation(summary = "인기 게시글 리스트 조회")
+    public ResultResponse<List<PopularFeedGetRes>> getPopularFeed() {
+        List<PopularFeedGetRes> result = feedService.getPopularFeed();
+
+        return ResultResponse.<List<PopularFeedGetRes>>builder()
+                .statusCode((String.valueOf(HttpServletResponse.SC_OK)))
+                .resultMsg("인기 게시글 리스트 조회 성공")
+                .resultData(result)
+                .build();
+    }
+
     @PutMapping()
     @Operation(summary = "게시글 수정")
     public ResultResponse<Integer>updFeed(@RequestBody FeedPutReq p) {

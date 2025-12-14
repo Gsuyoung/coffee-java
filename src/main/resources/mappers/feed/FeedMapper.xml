@@ -110,4 +110,20 @@
         DELETE FROM feed
         WHERE feed_id = #{feedId}
     </delete>
+
+    <!-- 인기 게시글 조회 -->
+    <select id="getPopularFeed">
+    SELECT A.feed_id AS feedId, A.cafe_name AS cafeName, C.district_name AS districtName,
+    A.title, B.nickname, A.created_at AS createdAt, COUNT(D.feed_id) AS feedLike
+    FROM feed A
+    INNER JOIN `user` B
+    ON A.user_id = B.user_id
+    INNER JOIN district C
+    ON A.district_id = C.district_id
+    INNER JOIN likes D
+    ON D.feed_id = A.feed_id
+    GROUP BY A.feed_id
+    ORDER BY feedLike DESC, A.feed_id
+    LIMIT 5;
+    </select>
 </mapper>
