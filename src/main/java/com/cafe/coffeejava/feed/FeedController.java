@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -71,7 +72,7 @@ public class FeedController {
                 .build();
     }
 
-    @PutMapping
+    @PutMapping()
     @Operation(summary = "게시글 수정")
     public ResultResponse<Integer>updFeed(@RequestBody FeedPutReq p) {
         int result = feedService.updFeed(p);
@@ -95,10 +96,10 @@ public class FeedController {
                 .build();
     }
 
-    @DeleteMapping("feedPic/{feedPicId}")
-    @Operation(summary = "게시글 사진 삭제")
-    public ResultResponse<Integer>delFeedPic(@PathVariable Long feedPicId) {
-        int result = feedService.delFeedPic(feedPicId);
+    @DeleteMapping("/feedPics")
+    @Operation(summary = "게시글 사진 다중 삭제")
+    public ResultResponse<Integer>delFeedPic(@RequestParam List<Long> feedPicIds) {
+        int result = feedService.delFeedPic(feedPicIds);
 
         return ResultResponse.<Integer>builder()
                 .statusCode(String.valueOf(HttpServletResponse.SC_NO_CONTENT))
