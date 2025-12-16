@@ -78,4 +78,16 @@ public class UserMyPageController {
                              .resultData(pic)
                              .build();
     }
+
+    @GetMapping("/myFeed")
+    @Operation(summary = "유저 마이 페이지 게시글 리스트 조회")
+    public ResultResponse<List<UserGetMyFeedListRes>> getMyFeed() {
+        List<UserGetMyFeedListRes> result = userMyPageService.getMyFeedList();
+
+        return ResultResponse.<List<UserGetMyFeedListRes>>builder()
+                .statusCode(String.valueOf(HttpServletResponse.SC_OK))
+                .resultMsg("유저 게시글 리스트 조회 성공")
+                .resultData(result)
+                .build();
+    }
 }

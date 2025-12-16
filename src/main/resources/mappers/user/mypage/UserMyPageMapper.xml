@@ -67,4 +67,18 @@
         SET user_pic = #{picName}
         WHERE user_id = #{userId}
     </update>
+
+    <!-- 유저가 작성한 게시글 리스트 조회-->
+    <select id="selUserMyFeedList">
+        SELECT A.feed_id AS feedId, A.title,
+               A.created_at AS createdAt,
+               COUNT(B.feed_id) AS feedLike, A.view_count AS viewCount
+        FROM feed A
+        LEFT JOIN likes B
+        ON A.feed_id = B.feed_id
+        INNER JOIN `user` C
+        ON A.user_id = C.user_id
+        WHERE C.user_id = #{userId}
+        GROUP BY A.feed_id, A.title, A.created_at, A.view_count
+    </select>
 </mapper>
