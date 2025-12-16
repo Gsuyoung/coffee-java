@@ -45,8 +45,8 @@ public class UserMyPageController {
 
     @GetMapping("/comment")
     @Operation(summary = "유저 마이 페이지 댓글 조회")
-    public ResultResponse<List<UserGetMyCommentRes>> getMyComment(@RequestParam long userId) {
-        List<UserGetMyCommentRes> list = userMyPageService.getMyComment(userId);
+    public ResultResponse<List<UserGetMyCommentRes>> getMyComment() {
+        List<UserGetMyCommentRes> list = userMyPageService.getMyComment();
 
         return ResultResponse.<List<UserGetMyCommentRes>>builder()
                              .statusCode(String.valueOf(HttpServletResponse.SC_OK))
@@ -57,8 +57,8 @@ public class UserMyPageController {
 
     @GetMapping("/like")
     @Operation(summary = "유저 마이 페이지 좋아요 리스트 조회")
-    public ResultResponse<List<UserGetMyLikesRes>> getMyLike(@RequestParam long userId) {
-        List<UserGetMyLikesRes> list = userMyPageService.getMyLike(userId);
+    public ResultResponse<List<UserGetMyLikesRes>> getMyLike() {
+        List<UserGetMyLikesRes> list = userMyPageService.getMyLike();
 
         return ResultResponse.<List<UserGetMyLikesRes>>builder()
                              .statusCode(String.valueOf(HttpServletResponse.SC_OK))

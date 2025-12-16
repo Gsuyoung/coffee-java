@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe.coffeejava.report.ReportMapper">
+    <!-- 신고 등록 -->
+    <insert id="insReport">
+        INSERT INTO report
+        SET report_type_id = #{req.reportTypeId}
+        , reporter_id = #{reporterId}
+        <choose>
+            <when test="req.feedId != null">
+                , feed_id = #{req.feedId}
+            </when>
+            <when test="req.commentId != null">
+                , comment_id = #{req.commentId}
+            </when>
+        </choose>
+    </insert>
+
+    <!-- 게시글 유무 확인 -->
+    <select id="selFeedByFeedId">
+        SELECT EXISTS (
+            SELECT *
+              FROM feed
+             WHERE feed_id = #{feedId}
+        )
+    </select>
+
+    <!-- 댓글 유무 확인 -->
+    <select id="selCommentByCommentId">
+        SELECT EXISTS (
+        SELECT *
+        FROM `comment`
+        WHERE comment_id = #{commentId}
+        )
+    </select>
+
+    <!-- 게시글 중복 신고 검증 -->
+    <select id="selDistrictReportByFeedId">
+        SELECT EXISTS (
+            SELECT *
+            FROM report
+            WHERE reporter_id = #{userId}
+            AND feed_id = #{feedId}
+        )
+    </select>
+
+    <!-- 댓글 중복 신고 검증 -->
+    <select id="selDistrictReportByCommentId">
+        SELECT EXISTS (
+        SELECT *
+        FROM report
+        WHERE reporter_id = #{userId}
+        AND comment_id = #{commentId}
+        )
+    </select>
+</mapper>
