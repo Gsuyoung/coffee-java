@@ -134,4 +134,10 @@ public class UserMyPageService {
 
         return savedPicName;
     }
+
+    public List<UserGetMyFeedListRes> getMyFeedList() {
+        Long loginUserId = authenticationFacade.getSignedUserId();
+
+        return userMyPageMapper.selUserMyFeedList(loginUserId);
+    }
 }

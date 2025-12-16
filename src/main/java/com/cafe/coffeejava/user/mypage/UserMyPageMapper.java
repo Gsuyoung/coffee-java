@@ -16,4 +16,6 @@ public interface UserMyPageMapper {
     List<UserGetMyCommentRes> selUserMyComment(long userId);
     List<UserGetMyLikesRes> selUserMyLikesList(long userId);
     int updUserPic(@Param("userId") Long userId, @Param("picName") String picName);;
+
+    List<UserGetMyFeedListRes> selUserMyFeedList(Long userId);
 }
