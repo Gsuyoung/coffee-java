@@ -77,25 +77,17 @@ public class UserMyPageService {
     }
 
     // 마이 페이지 유저 댓글 조회
-    public List<UserGetMyCommentRes> getMyComment(long userId) {
+    public List<UserGetMyCommentRes> getMyComment() {
         Long loginUserId = authenticationFacade.getSignedUserId();
 
-        if (!loginUserId.equals(userId)) {
-            throw new CustomException("로그인 정보가 일치하지 않습닏다.", HttpStatus.BAD_REQUEST);
-        }
-
-        return userMyPageMapper.selUserMyComment(userId);
+        return userMyPageMapper.selUserMyComment(loginUserId);
     }
 
     // 마이 페이지 좋아요 게시글 조회
-    public List<UserGetMyLikesRes> getMyLike(long userId) {
+    public List<UserGetMyLikesRes> getMyLike() {
         Long loginUserId = authenticationFacade.getSignedUserId();
 
-        if (!loginUserId.equals(userId)) {
-            throw new CustomException("로그인 정보가 일치하지 않습닏다.", HttpStatus.BAD_REQUEST);
-        }
-
-        return userMyPageMapper.selUserMyLikesList(userId);
+        return userMyPageMapper.selUserMyLikesList(loginUserId);
     }
 
     @Transactional
