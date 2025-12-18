@@ -1,5 +1,7 @@
 package com.cafe.coffeejava.report;
 
+import com.cafe.coffeejava.report.model.ReportCommentGetRes;
+import com.cafe.coffeejava.report.model.ReportFeedGetRes;
 import com.cafe.coffeejava.report.model.ReportPostReq;
 import com.cafe.coffeejava.report.model.ReportTypeGetRes;
 import org.apache.ibatis.annotations.Mapper;
@@ -15,4 +17,6 @@ public interface ReportMapper {
     boolean selDistrictReportByFeedId(@Param("userId") Long userId, @Param("feedId") Long feedId);
     boolean selDistrictReportByCommentId(@Param("userId") Long userId, @Param("commentId") Long commentId);
     List<ReportTypeGetRes> selReportType();
+    List<ReportFeedGetRes> selReportFeedList();
+    List<ReportCommentGetRes> selReportCommentList();
 }

@@ -1,7 +1,10 @@
 package com.cafe.coffeejava.report;
 
 import com.cafe.coffeejava.common.exception.CustomException;
+import com.cafe.coffeejava.config.jwt.JwtUser;
 import com.cafe.coffeejava.config.security.AuthenticationFacade;
+import com.cafe.coffeejava.report.model.ReportCommentGetRes;
+import com.cafe.coffeejava.report.model.ReportFeedGetRes;
 import com.cafe.coffeejava.report.model.ReportPostReq;
 import com.cafe.coffeejava.report.model.ReportTypeGetRes;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -52,6 +56,40 @@ public class ReportService {
     // 신고 유형 불러오기 (select box 용)
     public List<ReportTypeGetRes> getReportType() {
         List<ReportTypeGetRes> list = reportMapper.selReportType();
+
+        return list;
+    }
+
+    // 신고 당한 게시글 목록 불러오기 (관리자 전용)
+    public List<ReportFeedGetRes> getReportFeed() {
+        JwtUser loginUser = authenticationFacade.getSignedUser();
+
+        if (loginUser == null) {
+            throw new CustomException("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (loginUser.getRoles() != 1) { // 1= ROLE_ADMIN
+            throw new CustomException("관리자만 접근할 수 있습니다.", HttpStatus.FORBIDDEN);
+        }
+
+        List<ReportFeedGetRes> list = reportMapper.selReportFeedList();
+
+        return list;
+    }
+
+    // 신고 당한 댓글 목록 불러오기 (관리자 전용)
+    public List<ReportCommentGetRes> getReportComment() {
+        JwtUser loginUser = authenticationFacade.getSignedUser();
+
+        if (loginUser == null) {
+            throw new CustomException("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (loginUser.getRoles() != 1) { // 1= ROLE_ADMIN
+            throw new CustomException("관리자만 접근할 수 있습니다.", HttpStatus.FORBIDDEN);
+        }
+
+        List<ReportCommentGetRes> list = reportMapper.selReportCommentList();
 
         return list;
     }

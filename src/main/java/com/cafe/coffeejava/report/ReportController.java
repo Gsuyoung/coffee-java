@@ -1,6 +1,8 @@
 package com.cafe.coffeejava.report;
 
 import com.cafe.coffeejava.common.model.ResultResponse;
+import com.cafe.coffeejava.report.model.ReportCommentGetRes;
+import com.cafe.coffeejava.report.model.ReportFeedGetRes;
 import com.cafe.coffeejava.report.model.ReportPostReq;
 import com.cafe.coffeejava.report.model.ReportTypeGetRes;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,6 +40,30 @@ public class ReportController {
         return ResultResponse.<List<ReportTypeGetRes>>builder()
                              .statusCode(String.valueOf(HttpServletResponse.SC_OK))
                              .resultMsg("신고 유형 조회 성공")
+                             .resultData(list)
+                             .build();
+    }
+
+    @GetMapping("/feed")
+    @Operation(summary = "신고 게시글 목록 조회")
+    public ResultResponse<List<ReportFeedGetRes>> getReportFeed() {
+        List<ReportFeedGetRes> list = reportService.getReportFeed();
+
+        return ResultResponse.<List<ReportFeedGetRes>>builder()
+                             .statusCode(String.valueOf(HttpServletResponse.SC_OK))
+                             .resultMsg("신고 게시글 목록 조회 성공")
+                             .resultData(list)
+                             .build();
+    }
+
+    @GetMapping("/comment")
+    @Operation(summary = "신고 댓글 목록 조회")
+    public ResultResponse<List<ReportCommentGetRes>> getReportComment() {
+        List<ReportCommentGetRes> list = reportService.getReportComment();
+
+        return ResultResponse.<List<ReportCommentGetRes>>builder()
+                             .statusCode(String.valueOf(HttpServletResponse.SC_OK))
+                             .resultMsg("신고 댓글 목록 조회 성공")
                              .resultData(list)
                              .build();
     }

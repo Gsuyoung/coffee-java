@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cafe.coffeejava.dashboard.DashBoardMapper">
+
+    <!-- 지역별 카페 게시글 리스트 조회 -->
+    <select id="getDistrictCount">
+        SELECT COALESCE(COUNT(A.feed_id), 0) AS countFeedByDistrict
+        FROM feed A
+        RIGHT JOIN district B
+        ON A.district_id = B.district_id
+        WHERE B.district_id = #{districtId}
+    </select>
+
+    <!-- 신고 처리 완료된 유저 리스트-->
+    <select id="getReportUserList">
+        SELECT E.user_id AS userId, E.nickname,
+        CASE WHEN A.feed_id IS NOT NULL THEN 'Feed'
+        ELSE 'Comment'
+        END AS targetType,
+        COALESCE(A.feed_id, A.comment_id) AS targetId, A.report_id AS reportId,
+        B.report_type_name AS reportTypeName, A.action_reason AS actionReason,
+        COUNT(*) OVER (PARTITION BY E.user_id) AS reportCount
+        FROM report A
+        INNER JOIN report_type B
+        ON A.report_type_id = B.report_type_id
+        LEFT JOIN feed C
+        ON A.feed_id = C.feed_id
+        LEFT JOIN `comment` D
+        ON A.comment_id = D.comment_id
+        INNER JOIN `user` E
+        ON E.user_id = COALESCE(C.user_id, D.user_id)
+        WHERE A.report_status = 3
+        ORDER BY reportCount DESC, reportId DESC;
+    </select>
+
+    <!-- 게시글 작성이 많은 유저 리스트 조회-->
+    <select id="getTopUser">
+        SELECT A.user_id AS userId, A.email, A.nickname,
+               COUNT(B.feed_id) AS feedCount
+        FROM `user` A
+        INNER JOIN feed B
+        ON A.user_id = B.user_id
+        WHERE B.created_at &gt;= #{startDate}
+          AND B.created_at &lt;  #{endDate}
+        AND NOT EXISTS (
+        SELECT 1
+        FROM report C
+        WHERE C.reporter_id = A.user_id
+        AND C.action_status != 0
+        )
+        GROUP BY B.user_id, A.email, A.nickname
+        ORDER BY feedCount DESC
+    </select>
+</mapper>

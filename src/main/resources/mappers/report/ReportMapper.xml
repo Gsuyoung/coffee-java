@@ -56,8 +56,31 @@
         )
     </select>
 
+    <!-- 신고 유형 불러오기 -->
     <select id="selReportType">
         SELECT report_type_id AS reportTypeId, report_type_name AS reportTypeName
           FROM report_type
+    </select>
+
+    <!-- 신고 게시글 목록 조회 -->
+    <select id="selReportFeedList">
+        SELECT report_id AS reportId, report_type_id AS reportTypeId
+             , reporter_id AS reporterId, feed_id AS feedId
+             , report_status AS reportStatus, action_status AS actionStatus
+             , created_at AS createdAt
+          FROM report
+         WHERE feed_id IS NOT NULL
+         ORDER BY created_at
+    </select>
+
+    <!-- 신고 댓글 목록 조회 -->
+    <select id="selReportCommentList">
+        SELECT report_id AS reportId, report_type_id AS reportTypeId
+        , reporter_id AS reporterId, comment_id AS commentId
+        , report_status AS reportStatus, action_status AS actionStatus
+        , created_at AS createdAt
+        FROM report
+        WHERE comment_id IS NOT NULL
+        ORDER BY created_at
     </select>
 </mapper>
