@@ -85,4 +85,12 @@
           AND report_status = 0
         ORDER BY created_at
     </select>
+
+    <!-- 신고 읽음 처리 -->
+    <update id="updReportRead">
+        UPDATE report
+           SET report_status = 2
+         WHERE report_status = 0
+           AND report_id = #{reportId}
+    </update>
 </mapper>

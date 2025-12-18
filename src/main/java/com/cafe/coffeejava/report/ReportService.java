@@ -93,4 +93,21 @@ public class ReportService {
 
         return list;
     }
+
+    // 신고 읽음 처리
+    public int patchReportRead(long reportId) {
+        JwtUser loginUser = authenticationFacade.getSignedUser();
+
+        if (loginUser == null) {
+            throw new CustomException("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (loginUser.getRoles() != 1) { // 1= ROLE_ADMIN
+            throw new CustomException("관리자만 접근할 수 있습니다.", HttpStatus.FORBIDDEN);
+        }
+
+        int result = reportMapper.updReportRead(reportId);
+
+        return result;
+    }
 }
