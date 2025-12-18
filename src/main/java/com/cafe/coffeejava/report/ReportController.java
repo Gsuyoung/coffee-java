@@ -67,4 +67,16 @@ public class ReportController {
                              .resultData(list)
                              .build();
     }
+
+    @PatchMapping("/{reportId}")
+    @Operation(summary = "신고 읽음 처리")
+    public ResultResponse<Integer> patchReportRead(@PathVariable Long reportId) {
+        int result = reportService.patchReportRead(reportId);
+
+        return ResultResponse.<Integer>builder()
+                             .statusCode(String.valueOf(HttpServletResponse.SC_OK))
+                             .resultMsg(result == 1 ? "신고 읽음 처리 완료" : "이미 읽음 처리된 신고입니다")
+                             .resultData(result)
+                             .build();
+    }
 }
