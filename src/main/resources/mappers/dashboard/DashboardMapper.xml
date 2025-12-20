@@ -85,4 +85,38 @@
         ORDER BY feedCount DESC
         LIMIT 5
     </select>
+
+    <select id="getFeedCount">
+        SELECT YEAR(created_at) AS year,
+        MONTH(created_at) AS month,
+        COUNT(*) AS feedCount
+        FROM feed
+        GROUP BY YEAR(created_at), MONTH(created_at)
+        ORDER BY year, month
+    </select>
+
+    <select id="getTopReportUsers">
+        SELECT u.user_id AS userId, u.email, u.nickname, COUNT(*) AS reportCount
+        FROM (
+        SELECT B.user_id
+        FROM report A
+        INNER JOIN feed B
+        ON A.feed_id = B.feed_id
+        WHERE A.report_status = 0
+
+        UNION ALL
+
+        SELECT C.user_id
+        FROM report A
+        INNER JOIN `comment` C
+        ON A.comment_id = C.comment_id
+        WHERE A.report_status = 0
+        ) r
+        INNER JOIN `user` u
+        ON r.user_id = u.user_id
+        GROUP BY u.user_id, u.email, u.nickname
+        HAVING COUNT(*) >= 5
+        ORDER BY reportCount DESC, u.user_id
+        LIMIT 5
+    </select>
 </mapper>

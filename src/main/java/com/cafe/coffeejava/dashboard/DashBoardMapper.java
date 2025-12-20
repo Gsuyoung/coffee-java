@@ -1,9 +1,6 @@
 package com.cafe.coffeejava.dashboard;
 
-import com.cafe.coffeejava.dashboard.model.DashboardGetDistrictRes;
-import com.cafe.coffeejava.dashboard.model.DashboardGetReportCount;
-import com.cafe.coffeejava.dashboard.model.DashboardMonthReq;
-import com.cafe.coffeejava.dashboard.model.DashboardTopUserRes;
+import com.cafe.coffeejava.dashboard.model.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,4 +18,6 @@ public interface DashBoardMapper {
                                                      @Param("endDate") LocalDate endDate);
     List<DashboardGetReportCount> getReportCommentCount(@Param("startDate") LocalDate startDate,
                                                         @Param("endDate") LocalDate endDate);
+    List<DashboardGetFeedCountRes> getFeedCount();
+    List<DashboardGetTopReportUsers> getTopReportUsers();
 }

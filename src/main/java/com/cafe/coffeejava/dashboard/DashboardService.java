@@ -1,9 +1,6 @@
 package com.cafe.coffeejava.dashboard;
 
-import com.cafe.coffeejava.dashboard.model.DashboardGetDistrictRes;
-import com.cafe.coffeejava.dashboard.model.DashboardGetReportCount;
-import com.cafe.coffeejava.dashboard.model.DashboardMonthReq;
-import com.cafe.coffeejava.dashboard.model.DashboardTopUserRes;
+import com.cafe.coffeejava.dashboard.model.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +43,13 @@ public class DashboardService {
         LocalDate startDate = ym.atDay(1);
         LocalDate endDate = startDate.plusMonths(1);
         return dashBoardMapper.getTopUser(startDate, endDate);
+    }
+
+    public List<DashboardGetFeedCountRes> getFeedCount() {
+        return dashBoardMapper.getFeedCount();
+    }
+
+    public List<DashboardGetTopReportUsers> getTopReportUsers() {
+        return dashBoardMapper.getTopReportUsers();
     }
 }

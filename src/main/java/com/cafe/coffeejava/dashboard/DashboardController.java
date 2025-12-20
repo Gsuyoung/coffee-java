@@ -1,10 +1,7 @@
 package com.cafe.coffeejava.dashboard;
 
 import com.cafe.coffeejava.common.model.ResultResponse;
-import com.cafe.coffeejava.dashboard.model.DashboardGetDistrictRes;
-import com.cafe.coffeejava.dashboard.model.DashboardGetReportCount;
-import com.cafe.coffeejava.dashboard.model.DashboardMonthReq;
-import com.cafe.coffeejava.dashboard.model.DashboardTopUserRes;
+import com.cafe.coffeejava.dashboard.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -79,6 +76,30 @@ public class DashboardController {
         return ResultResponse.<List<DashboardTopUserRes>>builder()
                 .statusCode(String.valueOf(HttpServletResponse.SC_OK))
                 .resultMsg("게시글 많은 유저 리스트 조회 완료")
+                .resultData(result)
+                .build();
+    }
+
+    @GetMapping("/feedCount")
+    @Operation(summary = "월별 게시글 수")
+    public ResultResponse<List<DashboardGetFeedCountRes>> getFeedCount() {
+        List<DashboardGetFeedCountRes> result = dashboardService.getFeedCount();
+
+        return ResultResponse.<List<DashboardGetFeedCountRes>>builder()
+                .statusCode(String.valueOf(HttpServletResponse.SC_OK))
+                .resultMsg("월별 게시글 수 조회 완료")
+                .resultData(result)
+                .build();
+    }
+
+    @GetMapping("/topReportUsers")
+    @Operation(summary = "5회이상 신고당한 유저 리스트 조회")
+    public ResultResponse<List<DashboardGetTopReportUsers>> getTopReportUsers() {
+        List<DashboardGetTopReportUsers> result = dashboardService.getTopReportUsers();
+
+        return ResultResponse.<List<DashboardGetTopReportUsers>>builder()
+                .statusCode(String.valueOf(HttpServletResponse.SC_OK))
+                .resultMsg("5회이상 신고당한 유저 리스트 조회 완료")
                 .resultData(result)
                 .build();
     }
