@@ -19,4 +19,5 @@ public interface ReportMapper {
     int updReportRead(@Param("reportId") Long reportId);
     int updReportWithAllAction(@Param("reportId") Long reportId, @Param("actionReason") String actionReason);
     int updReportWithoutAction(@Param("reportId") Long reportId);
+    int updReportCancel(@Param("reportId") Long reportId, @Param("reporterId") Long reporterId);
 }

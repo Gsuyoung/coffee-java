@@ -91,4 +91,15 @@ public class ReportController {
                              .build();
     }
 
+    @PatchMapping("/{reportId}/cancel")
+    @Operation(summary = "신고 취소")
+    public ResultResponse<Integer> patchReportCancel(@PathVariable Long reportId) {
+        int result = reportService.patchReportCancel(reportId);
+
+        return ResultResponse.<Integer>builder()
+                .statusCode(String.valueOf((HttpServletResponse.SC_OK)))
+                .resultMsg("신고 취소 성공")
+                .resultData(result)
+                .build();
+    }
 }
