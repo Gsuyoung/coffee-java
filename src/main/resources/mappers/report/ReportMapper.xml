@@ -118,4 +118,13 @@
          WHERE report_status = 2
            AND report_id = #{reportId}
     </update>
+
+    <!-- 신고 취소 -->
+    <update id="updReportCancel">
+        UPDATE report
+           SET report_status = 1
+         WHERE report_status = 0
+           AND report_id = #{reportId}
+           AND reporter_id = #{reporterId}
+    </update>
 </mapper>

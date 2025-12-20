@@ -139,4 +139,25 @@ public class ReportService {
 
         return result;
     }
+
+    // 신고 취소
+    public int patchReportCancel(long reportId) {
+        JwtUser loginUser = authenticationFacade.getSignedUser();
+
+        if (loginUser == null) {
+            throw new CustomException("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (loginUser.getRoles() != 0) { // 0 = ROLE_USER
+            throw new CustomException("유저만 접근할 수 있습니다.", HttpStatus.FORBIDDEN);
+        }
+
+        int result = reportMapper.updReportCancel(reportId, loginUser.getSignedUserId());
+
+        if (result == 0) {
+            throw new CustomException("신고가 없거나 취소할 수 없습니다.", HttpStatus.NOT_FOUND);
+        }
+
+        return result;
+    }
 }
