@@ -1,14 +1,13 @@
 package com.cafe.coffeejava.report;
 
 import com.cafe.coffeejava.common.model.ResultResponse;
-import com.cafe.coffeejava.report.model.ReportCommentGetRes;
-import com.cafe.coffeejava.report.model.ReportFeedGetRes;
-import com.cafe.coffeejava.report.model.ReportPostReq;
-import com.cafe.coffeejava.report.model.ReportTypeGetRes;
+import com.cafe.coffeejava.report.model.*;
+import io.netty.util.internal.StringUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -79,4 +78,17 @@ public class ReportController {
                              .resultData(result)
                              .build();
     }
+
+    @PatchMapping("/{reportId}/action")
+    @Operation(summary = "제재 유무 처리")
+    public ResultResponse<Integer> patchReportComplete(@PathVariable Long reportId, @RequestBody ReportPatchActionReq req) {
+        int result = reportService.patchReportAction(reportId, req.getActionReason());
+
+        return ResultResponse.<Integer>builder()
+                             .statusCode(String.valueOf((HttpServletResponse.SC_OK)))
+                             .resultMsg(StringUtils.hasText(req.getActionReason()) ? "제재 처리 완료" : "신고 처리 완료(제재 없음)")
+                             .resultData(result)
+                             .build();
+    }
+
 }

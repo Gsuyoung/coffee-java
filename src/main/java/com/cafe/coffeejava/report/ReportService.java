@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -107,6 +108,34 @@ public class ReportService {
         }
 
         int result = reportMapper.updReportRead(reportId);
+
+        return result;
+    }
+
+    // 신고 게시글 or 댓글 제재 여부 변경
+    @Transactional
+    public int patchReportAction(long reportId, String actionReason) {
+        JwtUser loginUser = authenticationFacade.getSignedUser();
+
+        if (loginUser == null) {
+            throw new CustomException("로그인이 필요합니다.", HttpStatus.UNAUTHORIZED);
+        }
+
+        if (loginUser.getRoles() != 1) { // 1= ROLE_ADMIN
+            throw new CustomException("관리자만 접근할 수 있습니다.", HttpStatus.FORBIDDEN);
+        }
+
+        int result;
+
+        if (StringUtils.hasText(actionReason)) {
+            result = reportMapper.updReportWithAllAction(reportId, actionReason);
+        } else  {
+            result = reportMapper.updReportWithoutAction(reportId);
+        }
+
+        if (result == 0) {
+            throw new CustomException("이미 처리되었거나 유효하지 않은 신고입니다.", HttpStatus.NOT_FOUND);
+        }
 
         return result;
     }

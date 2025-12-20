@@ -93,4 +93,29 @@
          WHERE report_status = 0
            AND report_id = #{reportId}
     </update>
+
+    <!-- 신고 제재 있음 -->
+    <update id="updReportWithAllAction">
+        UPDATE report
+           SET report_status = 3
+             , action_status = 1
+             , action_reason = #{actionReason}
+         WHERE report_status IN (0, 2)
+           AND (
+                (feed_id IS NOT NULL AND feed_id = (
+                    SELECT feed_id FROM report WHERE report_id = #{reportId}
+                ))
+            OR (comment_id IS NOT NULL AND comment_id = (
+                    SELECT comment_id FROM report WHERE report_id = #{reportId}
+                ))
+        )
+    </update>
+
+    <!-- 신고 제재 없음 -->
+    <update id="updReportWithoutAction">
+        UPDATE report
+           SET report_status = 3
+         WHERE report_status = 2
+           AND report_id = #{reportId}
+    </update>
 </mapper>
