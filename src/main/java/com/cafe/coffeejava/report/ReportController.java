@@ -1,5 +1,6 @@
 package com.cafe.coffeejava.report;
 
+import com.cafe.coffeejava.common.model.Paging;
 import com.cafe.coffeejava.common.model.ResultResponse;
 import com.cafe.coffeejava.report.model.*;
 import io.netty.util.internal.StringUtil;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,8 +47,8 @@ public class ReportController {
 
     @GetMapping("/feed")
     @Operation(summary = "신고 게시글 목록 조회")
-    public ResultResponse<List<ReportFeedGetRes>> getReportFeed() {
-        List<ReportFeedGetRes> list = reportService.getReportFeed();
+    public ResultResponse<List<ReportFeedGetRes>> getReportFeed(@ModelAttribute @ParameterObject Paging p) {
+        List<ReportFeedGetRes> list = reportService.getReportFeed(p);
 
         return ResultResponse.<List<ReportFeedGetRes>>builder()
                              .statusCode(String.valueOf(HttpServletResponse.SC_OK))
@@ -57,8 +59,8 @@ public class ReportController {
 
     @GetMapping("/comment")
     @Operation(summary = "신고 댓글 목록 조회")
-    public ResultResponse<List<ReportCommentGetRes>> getReportComment() {
-        List<ReportCommentGetRes> list = reportService.getReportComment();
+    public ResultResponse<List<ReportCommentGetRes>> getReportComment(@ModelAttribute @ParameterObject Paging p) {
+        List<ReportCommentGetRes> list = reportService.getReportComment(p);
 
         return ResultResponse.<List<ReportCommentGetRes>>builder()
                              .statusCode(String.valueOf(HttpServletResponse.SC_OK))

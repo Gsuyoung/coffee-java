@@ -24,6 +24,11 @@ public class LikeService {
             throw new CustomException("피드가 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
 
+        long feedWritherId = likesMapper.selFeedWriter(feedId);
+        if (loginUserId == feedWritherId) {
+            throw new CustomException("본인 게시글에는 좋아요를 누를 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+
         // 좋아요 조회
         boolean existsLikes = likesMapper.existsLikes(loginUserId, feedId);
 

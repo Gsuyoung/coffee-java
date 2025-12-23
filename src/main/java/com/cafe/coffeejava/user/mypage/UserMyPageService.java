@@ -2,6 +2,7 @@ package com.cafe.coffeejava.user.mypage;
 
 import com.cafe.coffeejava.common.MyFileUtils;
 import com.cafe.coffeejava.common.exception.CustomException;
+import com.cafe.coffeejava.common.model.Paging;
 import com.cafe.coffeejava.config.security.AuthenticationFacade;
 import com.cafe.coffeejava.user.mypage.model.*;
 import lombok.RequiredArgsConstructor;
@@ -77,17 +78,17 @@ public class UserMyPageService {
     }
 
     // 마이 페이지 유저 댓글 조회
-    public List<UserGetMyCommentRes> getMyComment() {
+    public List<UserGetMyCommentRes> getMyComment(Paging p) {
         Long loginUserId = authenticationFacade.getSignedUserId();
 
-        return userMyPageMapper.selUserMyComment(loginUserId);
+        return userMyPageMapper.selUserMyComment(loginUserId, p);
     }
 
     // 마이 페이지 좋아요 게시글 조회
-    public List<UserGetMyLikesRes> getMyLike() {
+    public List<UserGetMyLikesRes> getMyLike(Paging p) {
         Long loginUserId = authenticationFacade.getSignedUserId();
 
-        return userMyPageMapper.selUserMyLikesList(loginUserId);
+        return userMyPageMapper.selUserMyLikesList(loginUserId, p);
     }
 
     @Transactional
@@ -127,9 +128,9 @@ public class UserMyPageService {
         return savedPicName;
     }
 
-    public List<UserGetMyFeedListRes> getMyFeedList() {
+    public List<UserGetMyFeedListRes> getMyFeedList(Paging p) {
         Long loginUserId = authenticationFacade.getSignedUserId();
 
-        return userMyPageMapper.selUserMyFeedList(loginUserId);
+        return userMyPageMapper.selUserMyFeedList(loginUserId, p);
     }
 }

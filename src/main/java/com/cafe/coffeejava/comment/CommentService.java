@@ -1,9 +1,6 @@
 package com.cafe.coffeejava.comment;
 
-import com.cafe.coffeejava.comment.model.CommentGetRes;
-import com.cafe.coffeejava.comment.model.CommentGetUserIdRes;
-import com.cafe.coffeejava.comment.model.CommentPatchReq;
-import com.cafe.coffeejava.comment.model.CommentPostReq;
+import com.cafe.coffeejava.comment.model.*;
 import com.cafe.coffeejava.common.exception.CustomException;
 import com.cafe.coffeejava.config.security.AuthenticationFacade;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,11 +35,11 @@ public class CommentService {
     }
 
     // 댓글 조회
-    public List<CommentGetRes> getComment(long feedId) {
-        List<CommentGetRes> list = commentMapper.selComment(feedId);
+    public List<CommentGetRes> getComment(CommentGetReq req) {
+        List<CommentGetRes> list = commentMapper.selComment(req);
 
         // 피드가 존재하는지 검색
-        boolean existsFeed = commentMapper.existsFeed(feedId);
+        boolean existsFeed = commentMapper.existsFeed(req.getFeedId());
 
         if (!existsFeed) {
             throw new CustomException("존재하지 않는 피드입니다.", HttpStatus.BAD_REQUEST);

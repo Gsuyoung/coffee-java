@@ -1,5 +1,6 @@
 package com.cafe.coffeejava.user.mypage;
 
+import com.cafe.coffeejava.common.model.Paging;
 import com.cafe.coffeejava.user.mypage.model.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -13,9 +14,9 @@ public interface UserMyPageMapper {
     UserGetNicknameRes selUserNickname(long userId);
     int updNickname(UserPatchNicknameReq req);
     int isNicknameExist(String nickname);
-    List<UserGetMyCommentRes> selUserMyComment(long userId);
-    List<UserGetMyLikesRes> selUserMyLikesList(long userId);
+    List<UserGetMyCommentRes> selUserMyComment(@Param("userId") long userId, @Param("p") Paging p);
+    List<UserGetMyLikesRes> selUserMyLikesList(@Param("userId") long userId, @Param("p") Paging p);
     int updUserPic(@Param("userId") Long userId, @Param("picName") String picName);;
 
-    List<UserGetMyFeedListRes> selUserMyFeedList(Long userId);
+    List<UserGetMyFeedListRes> selUserMyFeedList(@Param("userId") long userId, @Param("p") Paging p);
 }

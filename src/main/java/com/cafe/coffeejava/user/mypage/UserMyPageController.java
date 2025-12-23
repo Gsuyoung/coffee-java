@@ -1,11 +1,13 @@
 package com.cafe.coffeejava.user.mypage;
 
+import com.cafe.coffeejava.common.model.Paging;
 import com.cafe.coffeejava.common.model.ResultResponse;
 import com.cafe.coffeejava.user.mypage.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,8 +47,8 @@ public class UserMyPageController {
 
     @GetMapping("/comment")
     @Operation(summary = "유저 마이 페이지 댓글 조회")
-    public ResultResponse<List<UserGetMyCommentRes>> getMyComment() {
-        List<UserGetMyCommentRes> list = userMyPageService.getMyComment();
+    public ResultResponse<List<UserGetMyCommentRes>> getMyComment(@ModelAttribute @ParameterObject Paging p) {
+        List<UserGetMyCommentRes> list = userMyPageService.getMyComment(p);
 
         return ResultResponse.<List<UserGetMyCommentRes>>builder()
                              .statusCode(String.valueOf(HttpServletResponse.SC_OK))
@@ -57,8 +59,8 @@ public class UserMyPageController {
 
     @GetMapping("/like")
     @Operation(summary = "유저 마이 페이지 좋아요 리스트 조회")
-    public ResultResponse<List<UserGetMyLikesRes>> getMyLike() {
-        List<UserGetMyLikesRes> list = userMyPageService.getMyLike();
+    public ResultResponse<List<UserGetMyLikesRes>> getMyLike(@ModelAttribute @ParameterObject Paging p) {
+        List<UserGetMyLikesRes> list = userMyPageService.getMyLike(p);
 
         return ResultResponse.<List<UserGetMyLikesRes>>builder()
                              .statusCode(String.valueOf(HttpServletResponse.SC_OK))
@@ -81,8 +83,8 @@ public class UserMyPageController {
 
     @GetMapping("/myFeed")
     @Operation(summary = "유저 마이 페이지 게시글 리스트 조회")
-    public ResultResponse<List<UserGetMyFeedListRes>> getMyFeed() {
-        List<UserGetMyFeedListRes> result = userMyPageService.getMyFeedList();
+    public ResultResponse<List<UserGetMyFeedListRes>> getMyFeed(@ModelAttribute @ParameterObject Paging p) {
+        List<UserGetMyFeedListRes> result = userMyPageService.getMyFeedList(p);
 
         return ResultResponse.<List<UserGetMyFeedListRes>>builder()
                 .statusCode(String.valueOf(HttpServletResponse.SC_OK))

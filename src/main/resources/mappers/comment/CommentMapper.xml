@@ -29,6 +29,7 @@
             ON A.user_id = B.user_id
          WHERE A.feed_id = #{feedId}
          ORDER BY A.created_at
+         LIMIT #{startIdx}, #{size}
     </select>
 
     <!-- 댓글 수정 -->

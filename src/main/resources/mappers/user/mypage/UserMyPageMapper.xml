@@ -45,6 +45,7 @@
          INNER JOIN `comment` B
             ON A.feed_id = B.feed_id
          WHERE B.user_id = #{userId}
+         LIMIT #{p.startIdx}, #{p.size}
     </select>
 
     <!-- 유저 마이 페이지 좋아요 리스트 조회 -->
@@ -59,6 +60,7 @@
          INNER JOIN feed C
             ON B.feed_id = C.feed_id
          WHERE B.user_id = 12
+         LIMIT #{p.startIdx}, #{p.size}
     </select>
 
     <!-- 새로운 프로필 이미지 등록 -->
@@ -80,5 +82,6 @@
         ON A.user_id = C.user_id
         WHERE C.user_id = #{userId}
         GROUP BY A.feed_id, A.title, A.created_at, A.view_count
+        LIMIT #{p.startIdx}, #{p.size}
     </select>
 </mapper>

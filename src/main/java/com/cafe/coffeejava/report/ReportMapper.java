@@ -1,5 +1,6 @@
 package com.cafe.coffeejava.report;
 
+import com.cafe.coffeejava.common.model.Paging;
 import com.cafe.coffeejava.report.model.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,8 +15,8 @@ public interface ReportMapper {
     boolean selDistrictReportByFeedId(@Param("userId") Long userId, @Param("feedId") Long feedId);
     boolean selDistrictReportByCommentId(@Param("userId") Long userId, @Param("commentId") Long commentId);
     List<ReportTypeGetRes> selReportType();
-    List<ReportFeedGetRes> selReportFeedList();
-    List<ReportCommentGetRes> selReportCommentList();
+    List<ReportFeedGetRes> selReportFeedList(Paging p);
+    List<ReportCommentGetRes> selReportCommentList(Paging p);
     int updReportRead(@Param("reportId") Long reportId);
     int updReportWithAllAction(@Param("reportId") Long reportId, @Param("actionReason") String actionReason);
     int updReportWithoutAction(@Param("reportId") Long reportId);

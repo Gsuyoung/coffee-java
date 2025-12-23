@@ -35,4 +35,11 @@
              WHERE feed_id = #{feedId}
         )
     </select>
+
+    <!-- 피드 작성자 조회 -->
+    <select id="selFeedWriter">
+        SELECT user_id
+          FROM feed
+         WHERE feed_id = #{feedId}
+    </select>
 </mapper>

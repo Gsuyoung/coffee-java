@@ -1,6 +1,7 @@
 package com.cafe.coffeejava.report;
 
 import com.cafe.coffeejava.common.exception.CustomException;
+import com.cafe.coffeejava.common.model.Paging;
 import com.cafe.coffeejava.config.jwt.JwtUser;
 import com.cafe.coffeejava.config.security.AuthenticationFacade;
 import com.cafe.coffeejava.report.model.ReportCommentGetRes;
@@ -62,7 +63,7 @@ public class ReportService {
     }
 
     // 신고 당한 게시글 목록 불러오기 (관리자 전용)
-    public List<ReportFeedGetRes> getReportFeed() {
+    public List<ReportFeedGetRes> getReportFeed(Paging p) {
         JwtUser loginUser = authenticationFacade.getSignedUser();
 
         if (loginUser == null) {
@@ -73,13 +74,13 @@ public class ReportService {
             throw new CustomException("관리자만 접근할 수 있습니다.", HttpStatus.FORBIDDEN);
         }
 
-        List<ReportFeedGetRes> list = reportMapper.selReportFeedList();
+        List<ReportFeedGetRes> list = reportMapper.selReportFeedList(p);
 
         return list;
     }
 
     // 신고 당한 댓글 목록 불러오기 (관리자 전용)
-    public List<ReportCommentGetRes> getReportComment() {
+    public List<ReportCommentGetRes> getReportComment(Paging p) {
         JwtUser loginUser = authenticationFacade.getSignedUser();
 
         if (loginUser == null) {
@@ -90,7 +91,7 @@ public class ReportService {
             throw new CustomException("관리자만 접근할 수 있습니다.", HttpStatus.FORBIDDEN);
         }
 
-        List<ReportCommentGetRes> list = reportMapper.selReportCommentList();
+        List<ReportCommentGetRes> list = reportMapper.selReportCommentList(p);
 
         return list;
     }

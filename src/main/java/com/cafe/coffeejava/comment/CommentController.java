@@ -1,5 +1,6 @@
 package com.cafe.coffeejava.comment;
 
+import com.cafe.coffeejava.comment.model.CommentGetReq;
 import com.cafe.coffeejava.comment.model.CommentGetRes;
 import com.cafe.coffeejava.comment.model.CommentPatchReq;
 import com.cafe.coffeejava.comment.model.CommentPostReq;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,8 +36,8 @@ public class CommentController {
 
     @GetMapping
     @Operation(summary = "댓글 조회")
-    public ResultResponse<List<CommentGetRes>> getComment(@RequestParam long feedId) {
-        List<CommentGetRes> list = commentService.getComment(feedId);
+    public ResultResponse<List<CommentGetRes>> getComment(@ModelAttribute @ParameterObject CommentGetReq req) {
+        List<CommentGetRes> list = commentService.getComment(req);
 
         return ResultResponse.<List<CommentGetRes>>builder()
                              .statusCode(String.valueOf(HttpServletResponse.SC_OK))
