@@ -25,6 +25,12 @@
         ON A.user_id = B.user_id
         LEFT JOIN likes C
         ON A.feed_id = C.feed_id
+        WHERE NOT EXISTS (
+        SELECT 1
+        FROM report D
+        WHERE D.action_status = 1
+        AND D.feed_id = A.feed_id
+        )
         GROUP BY A.feed_id, title, nickname, DATE(A.created_at), view_count
         ORDER BY A.feed_id DESC
         LIMIT #{startIdx}, #{size}
@@ -39,6 +45,12 @@
         LEFT JOIN likes C
         ON A.feed_id = C.feed_id
         WHERE A.district_id = #{districtId}
+        AND NOT EXISTS (
+        SELECT 1
+        FROM report D
+        WHERE D.action_status = 1
+        AND D.feed_id = A.feed_id
+        )
         GROUP BY A.feed_id, title, nickname, DATE(A.created_at), view_count
         LIMIT #{startIdx}, #{size}
     </select>
@@ -122,6 +134,12 @@
     ON A.district_id = C.district_id
     INNER JOIN likes D
     ON D.feed_id = A.feed_id
+    WHERE NOT EXISTS (
+    SELECT 1
+    FROM report E
+    WHERE E.action_status = 1
+    AND E.feed_id = A.feed_id
+    )
     GROUP BY A.feed_id
     ORDER BY feedLike DESC, A.feed_id
     LIMIT 5;

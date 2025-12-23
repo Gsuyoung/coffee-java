@@ -40,27 +40,46 @@
 
     <!-- 유저 마이 페이지 댓글 조회 -->
     <select id="selUserMyComment" resultType="com.cafe.coffeejava.user.mypage.model.UserGetMyCommentRes">
-        SELECT A.title, B.feed_comment AS feedComment, B.created_at AS createdAt
-          FROM feed A
-         INNER JOIN `comment` B
-            ON A.feed_id = B.feed_id
-         WHERE B.user_id = #{userId}
-         LIMIT #{p.startIdx}, #{p.size}
+        SELECT B.title, A.feed_comment AS feedComment, A.created_at AS createdAt
+        FROM `comment` A
+        INNER JOIN feed B
+        ON A.feed_id = B.feed_id
+        WHERE A.user_id = #{userId}
+        AND NOT EXISTS (
+        SELECT 1
+        FROM report C
+        WHERE C.action_status = 1
+        AND (
+        C.comment_id = A.comment_id
+        OR C.feed_id = B.feed_id
+        )
+        )
+        LIMIT #{p.startIdx}, #{p.size}
     </select>
 
     <!-- 유저 마이 페이지 좋아요 리스트 조회 -->
     <select id="selUserMyLikesList" resultType="com.cafe.coffeejava.user.mypage.model.UserGetMyLikesRes">
-        SELECT C.feed_id AS feedId
-             , C.title, C.view_count AS viewCount
-             , C.created_at AS createdAt
-             , (SELECT COUNT(*)
-                  FROM likes A
-                 WHERE A.feed_id = C.feed_id) AS likeCount
-          FROM likes B
-         INNER JOIN feed C
-            ON B.feed_id = C.feed_id
-         WHERE B.user_id = 12
-         LIMIT #{p.startIdx}, #{p.size}
+        SELECT
+        C.feed_id AS feedId,
+        C.title,
+        C.view_count AS viewCount,
+        C.created_at AS createdAt,
+        (
+        SELECT COUNT(*)
+        FROM likes A
+        WHERE A.feed_id = C.feed_id
+        ) AS likeCount
+        FROM likes B
+        INNER JOIN feed C
+        ON B.feed_id = C.feed_id
+        WHERE B.user_id = #{userId}
+        AND NOT EXISTS (
+        SELECT 1
+        FROM report R
+        WHERE R.action_status = 1
+        AND R.feed_id = C.feed_id
+        )
+        LIMIT #{p.startIdx}, #{p.size}
     </select>
 
     <!-- 새로운 프로필 이미지 등록 -->
@@ -72,15 +91,20 @@
 
     <!-- 유저가 작성한 게시글 리스트 조회-->
     <select id="selUserMyFeedList">
-        SELECT A.feed_id AS feedId, A.title,
-               A.created_at AS createdAt,
-               COUNT(B.feed_id) AS feedLike, A.view_count AS viewCount
+        SELECT A.feed_id AS feedId, A.title, A.created_at AS createdAt
+        , COUNT(B.feed_id) AS feedLike, A.view_count AS viewCount
         FROM feed A
         LEFT JOIN likes B
         ON A.feed_id = B.feed_id
         INNER JOIN `user` C
         ON A.user_id = C.user_id
         WHERE C.user_id = #{userId}
+        AND NOT EXISTS (
+        SELECT 1
+        FROM report D
+        WHERE D.action_status = 1
+        AND D.feed_id = A.feed_id
+        )
         GROUP BY A.feed_id, A.title, A.created_at, A.view_count
         LIMIT #{p.startIdx}, #{p.size}
     </select>
