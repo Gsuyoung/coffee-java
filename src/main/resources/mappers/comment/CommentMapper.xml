@@ -28,6 +28,12 @@
          INNER JOIN `user` B
             ON A.user_id = B.user_id
          WHERE A.feed_id = #{feedId}
+           AND NOT EXISTS (
+             SELECT 1
+               FROM report C
+              WHERE C.action_status = 1
+                AND C.comment_id = A.comment_id
+           )
          ORDER BY A.created_at
          LIMIT #{startIdx}, #{size}
     </select>
