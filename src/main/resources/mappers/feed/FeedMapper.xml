@@ -118,6 +118,13 @@
         WHERE feed_id = #{feedId}
     </select>
 
+    <select id="existsBlockedFeed">
+        SELECT COUNT(1)
+        FROM report
+        WHERE feed_id = #{feedId}
+        AND action_status = 1
+    </select>
+
     <delete id="delFeed">
         DELETE FROM feed
         WHERE feed_id = #{feedId}
