@@ -140,6 +140,11 @@ public class FeedService {
             throw new CustomException("행정구역 ID가 없습니다.", HttpStatus.NOT_FOUND);
         }
 
+        int result = feedMapper.existsBlockedFeed(p.getFeedId());
+        if(result > 0) {
+            throw new CustomException("해당 피드는 수정할 수 없습니다.", HttpStatus.FORBIDDEN);
+        }
+
         return feedMapper.updFeed(p);
     }
 
@@ -164,6 +169,11 @@ public class FeedService {
 
         if (!signedUserId.equals(userId)) {
             throw new CustomException("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+
+        int result = feedMapper.existsBlockedFeed(feedId);
+        if(result > 0) {
+            throw new CustomException("해당 피드는 삭제할 수 없습니다.", HttpStatus.FORBIDDEN);
         }
 
         String baseDir = fileDirectory;

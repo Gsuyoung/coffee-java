@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "공지사항 관리", description = "공지사항 등록, 불러오기, 수정, 삭제")
+@Tag(name = "공지사항", description = "공지사항 등록, 불러오기, 수정, 삭제")
 @Builder
 @RestController
 @RequestMapping("board")

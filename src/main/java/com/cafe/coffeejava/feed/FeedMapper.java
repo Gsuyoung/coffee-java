@@ -16,6 +16,7 @@ public interface FeedMapper {
     //int findUserIdByFeed(Long feedId);
     int updFeed(FeedPutReq p);
     Long findUserIdByFeed(Long feedId);
+    int existsBlockedFeed(Long feedId);
     int delFeed(Long feedId);
 
     List<PopularFeedGetRes> getPopularFeed();
