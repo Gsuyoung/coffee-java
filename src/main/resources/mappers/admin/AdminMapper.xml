@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cafe.coffeejava.admin.AdminMapper">
+    <!-- 5건이상 신고당한 유저 리스트 조회 -->
+    <select id="getCountReportUser">
+        SELECT D.user_id AS userId, D.email, D.`name`, COUNT(A.report_id) AS totalReportCount,
+        MAX(A.created_at) AS recentReportAt
+        FROM report A
+        LEFT JOIN feed B
+        ON A.feed_id = B.feed_id
+        LEFT JOIN `comment` C
+        ON A.comment_id = C.comment_id
+        INNER JOIN `user` D
+        ON D.user_id = COALESCE(B.user_id, C.user_id)
+        WHERE A.action_status = 1
+        AND D.user_status = 0
+        GROUP BY D.user_id, D.email, D.`name`
+        HAVING COUNT(A.report_id) >= 5
+        ORDER BY recentReportAt DESC
+    </select>
+
+    <update id="updUserStatus">
+        UPDATE `user`
+        SET user_status = 1
+        WHERE user_id = #{userId}
+        AND user_status = 0
+    </update>
+</mapper>
