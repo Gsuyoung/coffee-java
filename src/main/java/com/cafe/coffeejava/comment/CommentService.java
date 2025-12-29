@@ -62,6 +62,11 @@ public class CommentService {
             throw new CustomException("권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
 
+        CommentGetActionRes res = commentMapper.selActionStatus(commentId);
+        if (res.getActionStatus() == 1) {
+            throw new CustomException("수정할 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+
         int result = commentMapper.updComment(commentId, loginUserId, req.getFeedComment());
 
         return result;
@@ -79,6 +84,11 @@ public class CommentService {
 
         if (userIdFromComment.getUserId() != loginUserId) {
             throw new CustomException("권한이 없는 요청입니다.", HttpStatus.FORBIDDEN);
+        }
+
+        CommentGetActionRes res = commentMapper.selActionStatus(commentId);
+        if (res.getActionStatus() == 1) {
+            throw new CustomException("삭제할 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         int result = commentMapper.delComment(commentId, loginUserId);

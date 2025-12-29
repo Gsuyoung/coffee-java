@@ -15,4 +15,5 @@ public interface CommentMapper {
     int updComment(@Param("commentId") long commentId, @Param("userId")  long userId, @Param("feedComment") String feedComment);
     CommentGetUserIdRes selUserIdFromComment(long commentId);
     int delComment(@Param("commentId") long commentId,  @Param("userId") long userId);
+    CommentGetActionRes selActionStatus(long commentId);
 }
