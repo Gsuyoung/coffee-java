@@ -57,4 +57,12 @@
         WHERE comment_id = #{commentId}
         AND user_id = #{userId}
     </delete>
+
+    <select id="selActionStatus">
+        SELECT A.report_id AS reportId, B.comment_id AS commentId, A.action_status AS actionStatus
+        FROM report A
+        INNER JOIN `comment` B
+        ON A.comment_id = B.comment_id
+        WHERE B.comment_id = #{commentId}
+    </select>
 </mapper>
