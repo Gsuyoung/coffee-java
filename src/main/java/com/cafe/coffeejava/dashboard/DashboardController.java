@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "대시보드 관리", description = "대시보드 불러오기")
+@Tag(name = "대시보드", description = "대시보드 불러오기")
 @Builder
 @RestController
 @RequestMapping("dashboard")
