@@ -9,7 +9,20 @@
            SET user_id = #{userId}
              , feed_id = #{req.feedId}
              , feed_comment = #{req.feedComment}
+             , parent_comment_id = #{req.parentCommentId}
     </insert>
+
+    <!-- 부모 댓글 조회 -->
+    <select id="selParentComment" resultType="com.cafe.coffeejava.comment.model.ParentCommentGetRes">
+        SELECT A.comment_id AS commentId
+             , A.feed_id AS feedId
+             , A.parent_comment_id AS parentCommentId
+             , IFNULL(B.action_status, 0) AS actionStatus
+          FROM comment A
+          LEFT JOIN report B
+            ON B.comment_id = A.comment_id
+         WHERE A.comment_id = #{parentCommentId}
+    </select>
 
     <!-- 피드 존재 유무 확인 -->
     <select id="existsFeed">
@@ -20,22 +33,61 @@
         )
     </select>
 
+    <!-- 부모 댓글 ID 페이징 -->
+    <select id="selParentCommentIds" resultType="long">
+        SELECT A.comment_id
+        FROM comment A
+        WHERE A.feed_id = #{feedId}
+        AND A.parent_comment_id IS NULL
+        AND NOT EXISTS (
+        SELECT 1
+        FROM report R
+        WHERE R.comment_id = A.comment_id
+        AND R.action_status = 1
+        )
+        ORDER BY A.created_at
+        LIMIT #{startIdx}, #{size}
+    </select>
+
     <!-- 댓글 조회 -->
-    <select id="selComment">
-        SELECT A.comment_id AS commentId, B.nickname
-             , B.user_id AS userId, A.feed_comment AS feedComment, A.created_at AS createdAt
-          FROM `comment` A
-         INNER JOIN `user` B
-            ON A.user_id = B.user_id
-         WHERE A.feed_id = #{feedId}
-           AND NOT EXISTS (
-             SELECT 1
-               FROM report C
-              WHERE C.action_status = 1
-                AND C.comment_id = A.comment_id
-           )
-         ORDER BY A.created_at
-         LIMIT #{startIdx}, #{size}
+    <select id="selCommentsByParentIds" resultType="com.cafe.coffeejava.comment.model.CommentFlatRes">
+        SELECT A.comment_id AS commentId
+        , A.user_id AS userId
+        , B.nickname
+        , A.feed_comment AS feedComment
+        , A.parent_comment_id AS parentCommentId
+        , A.created_at AS createdAt
+        FROM comment A
+        INNER JOIN user B
+        ON A.user_id = B.user_id
+        WHERE A.feed_id = #{feedId}
+        AND (
+        A.comment_id IN
+        <foreach collection="parentIds"
+                 item="id"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        OR A.parent_comment_id IN
+        <foreach collection="parentIds"
+                 item="id"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        )
+        AND NOT EXISTS (
+        SELECT 1
+        FROM report R
+        WHERE R.comment_id = A.comment_id
+        AND R.action_status = 1
+        )
+        ORDER BY
+        CASE
+        WHEN A.parent_comment_id IS NULL THEN A.comment_id
+        ELSE A.parent_comment_id
+        END,
+        A.parent_comment_id IS NOT NULL,
+        A.created_at
     </select>
 
     <!-- 댓글 수정 -->
@@ -45,6 +97,15 @@
          WHERE comment_id = #{commentId}
            AND user_id = #{userId}
     </update>
+
+    <!-- 대댓글 존재 여부 -->
+    <select id="existsReply" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1
+        FROM comment
+        WHERE parent_comment_id = #{commentId}
+        )
+    </select>
 
     <select id="selUserIdFromComment">
         SELECT user_id AS userId
