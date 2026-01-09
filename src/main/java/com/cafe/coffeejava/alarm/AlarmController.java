@@ -21,7 +21,7 @@ import java.util.List;
 public class AlarmController {
     private final AlarmService alarmService;
 
-    @GetMapping()
+    @GetMapping
     @Operation(summary = "유저 알림 조회")
     public ResultResponse<List<AlarmGetRes>> getAlarms(@ModelAttribute @ParameterObject Paging p) {
         List<AlarmGetRes> result = alarmService.getAlarms(p);
@@ -29,6 +29,18 @@ public class AlarmController {
         return ResultResponse.<List<AlarmGetRes>>builder()
                 .statusCode(String.valueOf(HttpServletResponse.SC_OK))
                 .resultMsg("알림 조회 성공")
+                .resultData(result)
+                .build();
+    }
+
+    @GetMapping("/unread")
+    @Operation(summary = "안 읽은 알림 갯수 조회")
+    public ResultResponse<Integer> countUnreadAlarm() {
+        int result = alarmService.countUnreadAlarm();
+
+        return ResultResponse.<Integer>builder()
+                .statusCode(String.valueOf(HttpServletResponse.SC_OK))
+                .resultMsg("안 읽은 알림 갯수 조회 성공")
                 .resultData(result)
                 .build();
     }

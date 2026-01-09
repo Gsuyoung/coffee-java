@@ -10,6 +10,13 @@
         ORDER BY created_at DESC
         LIMIT #{p.startIdx}, #{p.size}
     </select>
+    
+    <select id="countUnreadAlarm">
+        SELECT COUNT(*) AS unreadCount
+        FROM alarm
+        WHERE user_id = #{userId}
+        AND is_read = 0
+    </select>
 
     <update id="updAlarmRead">
         UPDATE alarm

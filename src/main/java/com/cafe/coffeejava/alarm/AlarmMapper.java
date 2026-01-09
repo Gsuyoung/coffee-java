@@ -11,6 +11,7 @@ import java.util.List;
 public interface AlarmMapper {
     List<AlarmGetRes> getAlarm(@Param("userId") Long userId,
                                @Param("p") Paging p);
+    int countUnreadAlarm(@Param("userId") Long userId);
     int updAlarmRead(@Param("userId") Long userId,
                      @Param("alarmId") Long alarmId);
 }
