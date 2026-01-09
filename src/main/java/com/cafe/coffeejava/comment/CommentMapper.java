@@ -16,4 +16,5 @@ public interface CommentMapper {
     CommentGetUserIdRes selUserIdFromComment(long commentId);
     int delComment(@Param("commentId") long commentId,  @Param("userId") long userId);
     CommentGetActionRes selActionStatus(long commentId);
+    ParentCommentGetRes selParentComment(@Param("parentCommentId") long parentCommentId);
 }

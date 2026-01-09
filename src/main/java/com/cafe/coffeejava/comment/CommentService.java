@@ -29,6 +29,31 @@ public class CommentService {
             throw new CustomException("존재하지 않는 피드입니다.", HttpStatus.BAD_REQUEST);
         }
 
+        // 대댓글인 경우
+        if (req.getParentCommentId() != null) {
+            ParentCommentGetRes parent = commentMapper.selParentComment(req.getParentCommentId());
+
+            // 부모 댓글 존재 여부
+            if (parent == null) {
+                throw new CustomException("부모 댓글이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+            }
+
+            // 같은 피드인지 검증
+            if (parent.getFeedId() != req.getFeedId()) {
+                throw new CustomException("잘못된 접근입니다.", HttpStatus.BAD_REQUEST);
+            }
+
+            // 대댓글의 대댓글 방지
+            if (parent.getParentCommentId() != null) {
+                throw new CustomException("대댓글에는 답글을 달 수 없습니다.", HttpStatus.BAD_REQUEST);
+            }
+
+            // 부모 댓글 제재 상태
+            if (parent.getActionStatus() == 1) {
+                throw new CustomException("답글을 달 수 없는 댓글입니다.", HttpStatus.BAD_REQUEST);
+            }
+        }
+
         int result = commentMapper.insComment(loginUserId, req);
 
         return result;

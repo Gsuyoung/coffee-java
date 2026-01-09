@@ -9,7 +9,20 @@
            SET user_id = #{userId}
              , feed_id = #{req.feedId}
              , feed_comment = #{req.feedComment}
+             , parent_comment_id = #{req.parentCommentId}
     </insert>
+
+    <!-- 부모 댓글 조회 -->
+    <select id="selParentComment" resultType="com.cafe.coffeejava.comment.model.ParentCommentGetRes">
+        SELECT A.comment_id AS commentId
+             , A.feed_id AS feedId
+             , A.parent_comment_id AS parentCommentId
+             , IFNULL(B.action_status, 0) AS actionStatus
+          FROM comment A
+          LEFT JOIN report B
+            ON B.comment_id = A.comment_id
+         WHERE A.comment_id = #{parentCommentId}
+    </select>
 
     <!-- 피드 존재 유무 확인 -->
     <select id="existsFeed">
