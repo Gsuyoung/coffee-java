@@ -3,13 +3,14 @@ package com.cafe.coffeejava.comment;
 import com.cafe.coffeejava.comment.model.*;
 import com.cafe.coffeejava.common.exception.CustomException;
 import com.cafe.coffeejava.config.security.AuthenticationFacade;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -61,8 +62,6 @@ public class CommentService {
 
     // 댓글 조회
     public List<CommentGetRes> getComment(CommentGetReq req) {
-        List<CommentGetRes> list = commentMapper.selComment(req);
-
         // 피드가 존재하는지 검색
         boolean existsFeed = commentMapper.existsFeed(req.getFeedId());
 
@@ -70,7 +69,46 @@ public class CommentService {
             throw new CustomException("존재하지 않는 피드입니다.", HttpStatus.BAD_REQUEST);
         }
 
-        return list;
+        // 2. 부모 댓글 ID만 페이징 조회
+        List<Long> parentIds = commentMapper.selParentCommentIds(req);
+
+        // 부모 댓글 자체가 없으면 바로 빈 리스트
+        if (parentIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 3. 부모 + 대댓글 전체 조회
+        List<CommentFlatRes> flatList = commentMapper.selCommentsByParentIds(req.getFeedId(), parentIds);
+
+        // 4. 계층 구조 조립
+        List<CommentGetRes> result = new ArrayList<>();
+        CommentGetRes currentParent = null;
+
+        for (CommentFlatRes flat : flatList) {
+
+            CommentGetRes dto = new CommentGetRes();
+            dto.setCommentId(flat.getCommentId());
+            dto.setUserId(flat.getUserId());
+            dto.setNickname(flat.getNickname());
+            dto.setFeedComment(flat.getFeedComment());
+            dto.setCreatedAt(flat.getCreatedAt());
+
+            // 부모 댓글
+            if (flat.getParentCommentId() == null) {
+                currentParent = dto;
+                result.add(dto);
+            }
+            // 대댓글
+            else {
+                // SQL 정렬 덕분에 항상 직전 부모가 맞음
+                if (currentParent != null &&
+                        currentParent.getCommentId() == flat.getParentCommentId()) {
+                    currentParent.getChildren().add(dto);
+                }
+            }
+        }
+
+        return result;
     }
 
     // 댓글 수정

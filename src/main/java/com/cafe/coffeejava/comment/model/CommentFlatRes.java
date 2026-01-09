@@ -4,17 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
-public class CommentGetRes {
+public class CommentFlatRes {
     private long commentId;
     private long userId;
     private String nickname;
     private String feedComment;
+    private Long parentCommentId;
     private LocalDateTime createdAt;
-
-    private List<CommentGetRes> children = new ArrayList<>();
 }
