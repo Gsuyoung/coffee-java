@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cafe.coffeejava.alarm.AlarmMapper">
+    <select id="getAlarm">
+        SELECT alarm_id AS alarmId, `type`, target_id AS targetId,
+               message, is_read AS isRead, created_at AS createdAt
+        FROM alarm
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{p.startIdx}, #{p.size}
+    </select>
+
+    <update id="updAlarmRead">
+        UPDATE alarm
+        SET is_read = 1
+        WHERE alarm_id = #{alarmId}
+        AND user_id = #{userId}
+    </update>
+</mapper>
