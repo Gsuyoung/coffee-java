@@ -126,8 +126,13 @@ public class CommentService {
         }
 
         CommentGetActionRes res = commentMapper.selActionStatus(commentId);
-        if (res.getActionStatus() == 1) {
+        if (res != null && res.getActionStatus() == 1) {
             throw new CustomException("수정할 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        boolean hasReply = commentMapper.existsReply(commentId);
+        if (hasReply) {
+            throw new CustomException("대댓글이 달린 댓글은 수정할 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         int result = commentMapper.updComment(commentId, loginUserId, req.getFeedComment());

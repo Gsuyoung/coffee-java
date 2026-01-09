@@ -13,6 +13,7 @@ public interface CommentMapper {
     List<CommentFlatRes> selCommentsByParentIds(@Param("feedId") long feedId, @Param("parentIds") List<Long> parentIds);
     List<Long> selParentCommentIds(CommentGetReq req);
     int updComment(@Param("commentId") long commentId, @Param("userId")  long userId, @Param("feedComment") String feedComment);
+    boolean existsReply(@Param("commentId") long commentId);
     CommentGetUserIdRes selUserIdFromComment(long commentId);
     int delComment(@Param("commentId") long commentId,  @Param("userId") long userId);
     CommentGetActionRes selActionStatus(long commentId);

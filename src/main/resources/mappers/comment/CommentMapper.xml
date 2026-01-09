@@ -98,6 +98,15 @@
            AND user_id = #{userId}
     </update>
 
+    <!-- 대댓글 존재 여부 -->
+    <select id="existsReply" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1
+        FROM comment
+        WHERE parent_comment_id = #{commentId}
+        )
+    </select>
+
     <select id="selUserIdFromComment">
         SELECT user_id AS userId
           FROM `comment`
