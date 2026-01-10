@@ -2,20 +2,113 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>WebSocket Test</title>
-
-    <!-- ✅ SockJS -->
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-
-    <!-- ✅ STOMP -->
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <title>WebSocket 로그인 + 테스트</title>
 </head>
 <body>
+
 <h2>WebSocket 테스트</h2>
 
+<button onclick="login()">1️⃣ 로그인</button>
+<button onclick="connectWs()">2️⃣ WebSocket 연결</button>
+<button onclick="sendMessage()">3️⃣ 메시지 보내기</button>
+
+<pre id="log"></pre>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
 <script>
-    console.log("SockJS:", typeof SockJS);
-    console.log("Stomp:", typeof Stomp);
+    let stompClient = null;
+
+    function log(msg) {
+        console.log(msg);
+        document.getElementById("log").innerText += msg + "\n";
+    }
+
+    /* ======================
+       1️⃣ 로그인
+    ====================== */
+    function login() {
+        fetch("http://localhost:8080/api/user/sign-in", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: "aaa@aaa.com",
+                password: "123!"
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                log("로그인 응답 수신");
+
+                const accessToken = data?.resultData?.accessToken;
+                if (!accessToken) {
+                    log("❌ accessToken 없음");
+                    return;
+                }
+
+                localStorage.setItem("accessToken", accessToken);
+                log("✅ 로그인 성공, 토큰 저장 완료");
+            })
+            .catch(err => {
+                log("❌ 로그인 실패");
+                console.error(err);
+            });
+    }
+
+    /* ======================
+       2️⃣ WebSocket 연결
+    ====================== */
+    function connectWs() {
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+            log("❌ 먼저 로그인 하세요");
+            return;
+        }
+
+        const socket = new SockJS("http://localhost:8080/ws");
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect(
+            {
+                Authorization: "Bearer " + accessToken
+            },
+            () => {
+                log("🔌 WebSocket 연결 성공");
+
+                // ✅ 하드코딩 제거 (로그인 유저 자동 매핑)
+                stompClient.subscribe("/user/queue/notify", msg => {
+                    log("📩 받은 알림: " + msg.body);
+                });
+            },
+            error => {
+                log("❌ WebSocket 연결 실패");
+                console.error(error);
+            }
+        );
+    }
+
+    /* ======================
+       3️⃣ 메시지 전송
+    ====================== */
+    function sendMessage() {
+        if (!stompClient || !stompClient.connected) {
+            log("❌ WebSocket 연결 안 됨");
+            return;
+        }
+
+        stompClient.send(
+            "/app/notify",
+            {},
+            JSON.stringify({
+                message: "웹소켓 알림 테스트"
+            })
+        );
+
+        log("➡️ 메시지 전송 완료");
+    }
 </script>
 
 </body>

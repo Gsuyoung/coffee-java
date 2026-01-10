@@ -1,6 +1,7 @@
 package com.cafe.coffeejava.common.exception;
 
 import com.cafe.coffeejava.common.model.ResultResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,10 +27,26 @@ public class GlobalExceptionHandler {
 
     // 1. 일반적인 예외 처리
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResultResponse<Integer>> handleGeneralException(Exception ex) {
+    public ResponseEntity<ResultResponse<Integer>> handleGeneralException(Exception ex,
+                                                                          HttpServletRequest request) {
 
-        ResultResponse<Integer> response = new ResultResponse<Integer>(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value())
-        , ex.getMessage(), 0);
+        String accept = request.getHeader("Accept");
+        String uri = request.getRequestURI();
+
+        // WebSocket / SockJS / SSE 요청은 예외 응답 보내지 않음
+        if ((accept != null && accept.contains("text/event-stream"))
+                || uri.startsWith("/ws")) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+        ResultResponse<Integer> response =
+                new ResultResponse<Integer>(
+                        String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                        ex.getMessage(),
+                        0
+                );
 
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
