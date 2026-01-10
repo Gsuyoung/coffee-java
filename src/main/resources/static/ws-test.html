@@ -8,9 +8,9 @@
 
 <h2>WebSocket 테스트</h2>
 
-<button onclick="login()">1️⃣ 로그인</button>
-<button onclick="connectWs()">2️⃣ WebSocket 연결</button>
-<button onclick="sendMessage()">3️⃣ 메시지 보내기</button>
+<button onclick="login()"> 로그인</button>
+<button onclick="connectWs()"> WebSocket 연결</button>
+<button onclick="sendMessage()"> 메시지 보내기</button>
 
 <pre id="log"></pre>
 
@@ -26,7 +26,7 @@
     }
 
     /* ======================
-       1️⃣ 로그인
+       로그인
     ====================== */
     function login() {
         fetch("http://localhost:8080/api/user/sign-in", {
@@ -45,26 +45,26 @@
 
                 const accessToken = data?.resultData?.accessToken;
                 if (!accessToken) {
-                    log("❌ accessToken 없음");
+                    log("accessToken 없음");
                     return;
                 }
 
                 localStorage.setItem("accessToken", accessToken);
-                log("✅ 로그인 성공, 토큰 저장 완료");
+                log("로그인 성공, 토큰 저장 완료");
             })
             .catch(err => {
-                log("❌ 로그인 실패");
+                log("로그인 실패");
                 console.error(err);
             });
     }
 
     /* ======================
-       2️⃣ WebSocket 연결
+       WebSocket 연결
     ====================== */
     function connectWs() {
         const accessToken = localStorage.getItem("accessToken");
         if (!accessToken) {
-            log("❌ 먼저 로그인 하세요");
+            log("먼저 로그인 하세요");
             return;
         }
 
@@ -76,26 +76,26 @@
                 Authorization: "Bearer " + accessToken
             },
             () => {
-                log("🔌 WebSocket 연결 성공");
+                log("WebSocket 연결 성공");
 
-                // ✅ 하드코딩 제거 (로그인 유저 자동 매핑)
+                // 하드코딩 제거 (로그인 유저 자동 매핑)
                 stompClient.subscribe("/user/queue/notify", msg => {
-                    log("📩 받은 알림: " + msg.body);
+                    log("받은 알림: " + msg.body);
                 });
             },
             error => {
-                log("❌ WebSocket 연결 실패");
+                log("WebSocket 연결 실패");
                 console.error(error);
             }
         );
     }
 
     /* ======================
-       3️⃣ 메시지 전송
+       메시지 전송
     ====================== */
     function sendMessage() {
         if (!stompClient || !stompClient.connected) {
-            log("❌ WebSocket 연결 안 됨");
+            log("WebSocket 연결 안 됨");
             return;
         }
 
@@ -107,7 +107,7 @@
             })
         );
 
-        log("➡️ 메시지 전송 완료");
+        log("메시지 전송 완료");
     }
 </script>
 
