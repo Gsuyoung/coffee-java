@@ -2,47 +2,126 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Alarm Test</title>
+    <title>JWT WebSocket Alarm Test</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body>
 
-<button onclick="connect()">연결</button>
-<button onclick="disconnect()">끊기</button>
+<h3>JWT 로그인 + WebSocket 테스트</h3>
+
+<div>
+    이메일: <input type="text" id="email" value="aaa@aaa.com"/>
+    비밀번호: <input type="password" id="password" value="123!"/>
+</div>
+
+<br/>
+
+<button onclick="login()">로그인</button>
+<button onclick="connect()">웹소켓 연결</button>
+<button onclick="disconnect()">연결 끊기</button>
+
+<hr/>
 
 <div id="log"></div>
 
 <script>
     let stompClient = null;
+    let accessToken = "";
 
     function log(message) {
         document.getElementById("log").innerHTML += message + "<br/>";
         console.log(message);
     }
 
+    // ======= 여기부터 프로젝트에 맞게 수정하면 되는 부분 =======
+
+    const LOGIN_URL = "http://localhost:8080/api/user/sign-in";   // ← 실제 로그인 API 주소로 변경
+    const WS_URL = "http://localhost:8080/ws";
+
+    // 로그인 API 요청 body 구조 (프로젝트에 맞게 수정)
+    function getLoginRequestBody() {
+        return {
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        };
+    }
+
+    // 로그인 응답에서 토큰 꺼내는 방식 (프로젝트 응답 구조에 맞게 수정)
+    function extractToken(data) {
+        return data.resultData.accessToken;   // 예: { accessToken: "..." }
+        // 만약 응답이 { token: "..." } 형태면:
+        // return data.token;
+    }
+
+    // ======= 여기까지 =======
+
+
+    // 1. 로그인
+    function login() {
+        log("로그인 시도 중...");
+
+        fetch(LOGIN_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(getLoginRequestBody())
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("로그인 실패 (HTTP " + res.status + ")");
+                }
+                return res.json();
+            })
+            .then(data => {
+                accessToken = extractToken(data);
+
+                if (!accessToken) {
+                    throw new Error("토큰을 찾을 수 없음");
+                }
+
+                log("로그인 성공! 토큰 저장됨");
+            })
+            .catch(error => {
+                log("로그인 실패: " + error);
+            });
+    }
+
+    // 2. JWT 포함해서 WebSocket 연결
     function connect() {
-        const socket = new SockJS("http://localhost:8080/ws");
+        if (!accessToken) {
+            log("먼저 로그인부터 해주세요!");
+            return;
+        }
+
+        const socket = new SockJS(WS_URL);
         stompClient = Stomp.over(socket);
 
-        stompClient.connect({}, function(frame) {
-            log("연결 성공: " + frame);
+        stompClient.connect(
+            {
+                Authorization: "Bearer " + accessToken
+            },
+            function(frame) {
+                log("웹소켓 연결 성공: " + frame);
 
-            // 사용자 전용 알림 구독
-            stompClient.subscribe('/user/queue/alarm', function(message) {
-                log("알림 수신: " + message.body);
-            });
-
-        }, function(error) {
-            log("연결 실패: " + error);
-        });
+                // 사용자 전용 알림 구독
+                stompClient.subscribe('/user/queue/alarm', function(message) {
+                    log("알림 수신: " + message.body);
+                });
+            },
+            function(error) {
+                log("웹소켓 연결 실패: " + error);
+            }
+        );
     }
 
     function disconnect() {
         if (stompClient !== null) {
             stompClient.disconnect();
         }
-        log("연결 종료");
+        log("웹소켓 연결 종료");
     }
 </script>
 

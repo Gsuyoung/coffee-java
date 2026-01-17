@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static reactor.netty.http.HttpConnectionLiveness.log;
+
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -41,7 +43,8 @@ public class LikeService {
             return false;
         } else {
             likesMapper.insLikes(loginUserId, feedId);
-
+            log.info("좋아요 알림 전송 시작. 대상 userId = {}", feedWritherId);
+            log.info("WebSocket sendToUser 호출: userId={}, destination=/queue/alarm", feedWritherId);
             alarmService.createLikeAlarm(feedWritherId, feedId);
             return true;
         }
