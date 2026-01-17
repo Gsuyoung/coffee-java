@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Alarm Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+
+<button onclick="connect()">연결</button>
+<button onclick="disconnect()">끊기</button>
+
+<div id="log"></div>
+
+<script>
+    let stompClient = null;
+
+    function log(message) {
+        document.getElementById("log").innerHTML += message + "<br/>";
+        console.log(message);
+    }
+
+    function connect() {
+        const socket = new SockJS("http://localhost:8080/ws");
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function(frame) {
+            log("연결 성공: " + frame);
+
+            // 사용자 전용 알림 구독
+            stompClient.subscribe('/user/queue/alarm', function(message) {
+                log("알림 수신: " + message.body);
+            });
+
+        }, function(error) {
+            log("연결 실패: " + error);
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+        }
+        log("연결 종료");
+    }
+</script>
+
+</body>
+</html>

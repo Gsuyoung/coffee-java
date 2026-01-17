@@ -8,6 +8,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 
+import java.security.Principal;
+
 @Controller
 @RequiredArgsConstructor
 public class NotificationController {
@@ -17,18 +19,20 @@ public class NotificationController {
     // 프론트에서 /app/notify 로 보내면 여기로 들어옴
     @MessageMapping("/notify")
     public void send(NotificationMessage message,
-                     @AuthenticationPrincipal MyUserDetails user) {
+                     Principal principal) {
 
-        if(user == null) {
-            System.out.println("WebSocket user null");
+        if(principal == null) {
+            System.out.println("WebSocket principal null");
             return;
         }
 
-        Long signedUserId = user.getJwtUser().getSignedUserId();
+        Long signedUserId = Long.valueOf(principal.getName());
         System.out.println("로그인 유저 ID: " + signedUserId);
+
         // 특정 유저에게만 보내기
-        messagingTemplate.convertAndSend(
-                "/queue/notify/" + signedUserId,
+        messagingTemplate.convertAndSendToUser(
+                principal.getName(),
+                "/queue/notify/",
                 message.getMessage()
         );
     }

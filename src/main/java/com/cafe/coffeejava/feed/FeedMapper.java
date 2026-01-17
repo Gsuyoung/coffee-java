@@ -13,7 +13,6 @@ public interface FeedMapper {
     List<FeedGetDto> getFeedListByDistrict(FeedDistrictGetReq p);
     FeedGetDetailDto getFeedDetailList(Long feedId);
     int updViewCount(Long feedId);
-    //int findUserIdByFeed(Long feedId);
     int updFeed(FeedPutReq p);
     Long findUserIdByFeed(Long feedId);
     int existsBlockedFeed(Long feedId);

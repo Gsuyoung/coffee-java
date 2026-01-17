@@ -30,6 +30,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app");
         // topic : 서버 → 여러 명, queue : 서버 → 특정 유저
         registry.enableSimpleBroker("/topic", "/queue");
+        //사용자별 전용 큐
+        registry.setUserDestinationPrefix("/user");
     }
 
     @Override

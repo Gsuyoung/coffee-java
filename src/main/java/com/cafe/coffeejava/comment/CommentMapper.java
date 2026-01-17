@@ -8,7 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface CommentMapper {
+    //댓글 등록
     int insComment(@Param("userId") long userId, @Param("req") CommentPostReq req);
+    //피드 존재 여부
     boolean existsFeed(@Param("feedId") long feedId);
     List<CommentFlatRes> selCommentsByParentIds(@Param("feedId") long feedId, @Param("parentIds") List<Long> parentIds);
     List<Long> selParentCommentIds(CommentGetReq req);
@@ -17,5 +19,8 @@ public interface CommentMapper {
     CommentGetUserIdRes selUserIdFromComment(long commentId);
     int delComment(@Param("commentId") long commentId,  @Param("userId") long userId);
     CommentGetActionRes selActionStatus(long commentId);
+    //부모 댓글 조회
     ParentCommentGetRes selParentComment(@Param("parentCommentId") long parentCommentId);
+
+    Long findCommentOwnerId(long commentId);
 }
