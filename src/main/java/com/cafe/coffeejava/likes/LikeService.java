@@ -1,5 +1,6 @@
 package com.cafe.coffeejava.likes;
 
+import com.cafe.coffeejava.alarm.AlarmService;
 import com.cafe.coffeejava.common.exception.CustomException;
 import com.cafe.coffeejava.config.security.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeService {
     private final LikesMapper likesMapper;
     private final AuthenticationFacade  authenticationFacade;
+    private final AlarmService alarmService;
 
     // 좋아요 등록 & 삭제
     @Transactional
@@ -39,6 +41,8 @@ public class LikeService {
             return false;
         } else {
             likesMapper.insLikes(loginUserId, feedId);
+
+            alarmService.createLikeAlarm(feedWritherId, feedId);
             return true;
         }
     }

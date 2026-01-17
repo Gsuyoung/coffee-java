@@ -2,6 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.cafe.coffeejava.alarm.AlarmMapper">
+    <insert id="insAlarm">
+        INSERT INTO alarm
+        SET user_id = #{userId},
+        type = #{p.type},
+        target_id = #{p.targetId},
+        message = #{p.message}
+    </insert>
+
     <select id="getAlarm">
         SELECT alarm_id AS alarmId, `type`, target_id AS targetId,
                message, is_read AS isRead, created_at AS createdAt

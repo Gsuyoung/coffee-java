@@ -1,9 +1,12 @@
 package com.cafe.coffeejava.report;
 
+import com.cafe.coffeejava.alarm.AlarmService;
+import com.cafe.coffeejava.comment.CommentMapper;
 import com.cafe.coffeejava.common.exception.CustomException;
 import com.cafe.coffeejava.common.model.Paging;
 import com.cafe.coffeejava.config.jwt.JwtUser;
 import com.cafe.coffeejava.config.security.AuthenticationFacade;
+import com.cafe.coffeejava.feed.FeedMapper;
 import com.cafe.coffeejava.report.model.ReportCommentGetRes;
 import com.cafe.coffeejava.report.model.ReportFeedGetRes;
 import com.cafe.coffeejava.report.model.ReportPostReq;
@@ -22,6 +25,9 @@ import java.util.List;
 public class ReportService {
     private final ReportMapper reportMapper;
     private final AuthenticationFacade authenticationFacade;
+    private final AlarmService alarmService;
+    private final FeedMapper feedMapper;
+    private final CommentMapper commentMapper;
 
     // 신고 등록
     @Transactional
@@ -51,6 +57,23 @@ public class ReportService {
         }
 
         int result =  reportMapper.insReport(loginUserId, req);
+        Long targetUserId = null;
+        Long targetId = null;
+
+        if(req.getFeedId() != null && req.getCommentId() == null) {
+            targetId = req.getFeedId();
+            targetUserId = feedMapper.findUserIdByFeed(targetId);
+        } else if (req.getCommentId() != null && req.getFeedId() == null) {
+            targetId = req.getCommentId();
+            targetUserId = commentMapper.findCommentOwnerId(targetId);
+        } else {
+            throw new CustomException("잘못된 신고 요청입니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        //알림 생성(본인 제외)
+        if(targetUserId != null && targetUserId != loginUserId) {
+            alarmService.createReportAlarm(targetUserId, targetId);
+        }
 
         return result;
     }

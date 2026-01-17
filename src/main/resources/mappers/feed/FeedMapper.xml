@@ -54,12 +54,6 @@
         GROUP BY A.feed_id, title, nickname, DATE(A.created_at), view_count
         LIMIT #{startIdx}, #{size}
     </select>
-
-    <!-- <select id="findUserIdByFeed">
-        SELECT user_id
-        FROM feed
-        WHERE feed_id = #{feedId}
-    </select> -->
     
     <resultMap id="feedDetailMap" type="com.cafe.coffeejava.feed.model.FeedGetDetailDto">
         <id property="feedId" column="feedId"/>
