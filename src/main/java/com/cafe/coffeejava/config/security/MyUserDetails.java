@@ -1,9 +1,11 @@
 package com.cafe.coffeejava.config.security;
 
 
+import com.cafe.coffeejava.common.exception.CustomException;
 import com.cafe.coffeejava.config.jwt.JwtUser;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +35,9 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return null;
+        if(jwtUser == null || jwtUser.getSignedUserId() == null) {
+            throw new IllegalStateException("jwtUser or signedUserId is null");
+        }
+        return String.valueOf(jwtUser.getSignedUserId());
     }
 }

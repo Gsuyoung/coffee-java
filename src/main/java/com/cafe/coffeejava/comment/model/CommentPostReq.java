@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 @Schema(description = "댓글 등록 정보")
 public class CommentPostReq {
+    private long commentId;
     @Schema(description = "게시글 PK", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
     private long feedId;
     @NotBlank(message = "댓글 내용을 입력해주세요.")

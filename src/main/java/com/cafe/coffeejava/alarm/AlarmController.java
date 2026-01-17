@@ -1,6 +1,7 @@
 package com.cafe.coffeejava.alarm;
 
 import com.cafe.coffeejava.alarm.model.AlarmGetRes;
+import com.cafe.coffeejava.alarm.model.AlarmPostReq;
 import com.cafe.coffeejava.common.model.Paging;
 import com.cafe.coffeejava.common.model.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,8 +1,10 @@
 package com.cafe.coffeejava.comment;
 
+import com.cafe.coffeejava.alarm.AlarmService;
 import com.cafe.coffeejava.comment.model.*;
 import com.cafe.coffeejava.common.exception.CustomException;
 import com.cafe.coffeejava.config.security.AuthenticationFacade;
+import com.cafe.coffeejava.feed.FeedMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,11 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 
+import static reactor.netty.http.HttpConnectionLiveness.log;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentMapper commentMapper;
     private final AuthenticationFacade authenticationFacade;
+    private final AlarmService alarmService;
+    private final FeedMapper feedMapper;
 
     // 댓글 등록
     @Transactional
@@ -55,9 +61,27 @@ public class CommentService {
             }
         }
 
-        int result = commentMapper.insComment(loginUserId, req);
+        commentMapper.insComment(loginUserId, req);
+        long commentId = req.getCommentId();
 
-        return result;
+        // 알림 대상
+        Long targetUserId = null;
+
+        if(req.getParentCommentId() == null) {
+            //일반 댓글 -> 피드 작성자
+            targetUserId = feedMapper.findUserIdByFeed(req.getFeedId());
+        } else {
+            //대댓글 -> 부모 댓글 작성자
+            targetUserId = commentMapper.findCommentOwnerId(req.getParentCommentId());
+        }
+
+        // 알림 생성
+        if(targetUserId != null && targetUserId != loginUserId) {
+            log.info("알림 생성 시도");
+            alarmService.createCommentAlarm(targetUserId, commentId);
+        }
+
+        return 1;
     }
 
     // 댓글 조회
